@@ -1,4 +1,6 @@
 import random
+
+
 class node:
     def __init__(self, identifier):
         self.id = identifier
@@ -156,9 +158,11 @@ def forward_checker(input_matrix, nodes, number_of_rows):
                     j += 1
 
                 if zero_counter > one_counter:
-                    node.domain.remove("0")
+                    if "0" in node.domain:
+                        node.domain.remove("0")
                 if one_counter > zero_counter:
-                    node.domain.remove("1")
+                    if "1" in node.domain:
+                        node.domain.remove("1")
 
                 # Checking different strings in columns and rows constraint
                 row_strings = row_strings_finder(input_matrix, number_of_rows)
@@ -203,9 +207,11 @@ def forward_checker(input_matrix, nodes, number_of_rows):
                         zero_counter += 1
                     j += 1
                 if zero_counter > one_counter:
-                    node.domain.remove("0")
+                    if "0" in node.domain:
+                        node.domain.remove("0")
                 if one_counter > zero_counter:
-                    node.domain.remove("1")
+                    if "1" in node.domain:
+                        node.domain.remove("1")
 
                 # Checking different strings in columns and rows constraint
                 column_strings = column_strings_finder(input_matrix, number_of_rows)
@@ -232,43 +238,51 @@ def forward_checker(input_matrix, nodes, number_of_rows):
             if row - 1 >= 0 and row + 1 < number_of_rows and input_matrix[row - 1][column] == input_matrix[row + 1][
                 column] and input_matrix[row - 1][column] != "-":
                 value = input_matrix[row - 1][column]
-                node.domain.remove(value)
+                if value in node.domain:
+                    node.domain.remove(value)
             if row - 2 >= 0 and input_matrix[row - 2][column] == input_matrix[row - 1][column] and \
                     input_matrix[row - 2][column] != "-":
                 value = input_matrix[row - 2][column]
-                node.domain.remove(value)
+                if value in node.domain:
+                    node.domain.remove(value)
             if row + 2 < number_of_rows and input_matrix[row + 2][column] == input_matrix[row + 1][column] and \
                     input_matrix[row + 2][column] != "-":
                 value = input_matrix[row + 2][column]
-                node.domain.remove(value)
+                if value in node.domain:
+                    node.domain.remove(value)
 
             # Checking not more than row equal numbers in a row constraint
             if column - 1 >= 0 and column + 1 < number_of_rows and input_matrix[row][column - 1] == input_matrix[row][
                 column + 1] and input_matrix[row][column - 1] != "-":
                 value = input_matrix[row][column - 1]
-                node.domain.remove(value)
+                if value in node.domain:
+                    node.domain.remove(value)
             if column - 2 >= 0 and input_matrix[row][column - 2] == input_matrix[row][column - 1] and input_matrix[row][
                 column - 2] != "-":
                 value = input_matrix[row][column - 2]
-                node.domain.remove(value)
+                if value in node.domain:
+                    node.domain.remove(value)
             if column + 2 < number_of_rows and input_matrix[row][column + 2] == input_matrix[row][column + 1] and \
                     input_matrix[row][column + 2] != "-":
                 value = input_matrix[row][column + 2]
-                node.domain.remove(value)
+                if value in node.domain:
+                    node.domain.remove(value)
 
 
 # This function selects a node by MRV method
-def most_remaining_value_finder(nodes):
+def minimum_remaining_value_finder(nodes):
     i = 0
+    minimum_remaining_node = ""
     while i < len(nodes):
         if not nodes[i].assigned:
             minimum_remaining_node = nodes[i]
             break
         i += 1
-    for node in nodes:
-        if not node.assigned:
-            if len(node.domain) < len(minimum_remaining_node.domain):
-                minimum_remaining_node = node
+    if minimum_remaining_node != "":
+        for node in nodes:
+            if not node.assigned:
+                if len(node.domain) < len(minimum_remaining_node.domain):
+                    minimum_remaining_node = node
     return minimum_remaining_node
 
 
@@ -289,11 +303,11 @@ def random_assigner(node):
 
 # Main part of the code starts here
 input_matrix, number_of_rows = file_reader()
-print(input_matrix)
+# print(input_matrix)
 
 nodes = nodes_generator(input_matrix, number_of_rows)
 forward_checker(input_matrix, nodes, number_of_rows)
-root = most_remaining_value_finder(nodes)
+root = minimum_remaining_value_finder(nodes)
 random_assigner(root)
 row, column = row_and_column_finder(root.id)
 input_matrix[row][column] = root.value
@@ -302,12 +316,13 @@ root.parent = node("1")   # This is the root's parent id for finding it
 root.domain.remove(root.value)
 number_of_assigned_nodes = 1
 previous_selected_node = root
-current_node = most_remaining_value_finder(nodes)
+current_node = minimum_remaining_value_finder(nodes)
+current_node.parent = root
 
 # Backtracking algorithm is implemented here
 while number_of_assigned_nodes != len(nodes):
     if len(current_node.domain) == 0:
-        if current_node.parent.id == "1":
+        if current_node.parent != "" and current_node.parent.id == "1":
             print("Error")
         else:
             current_node.domain.append("0")
@@ -331,14 +346,15 @@ while number_of_assigned_nodes != len(nodes):
         current_node.domain.remove(current_node.value)
         current_node.parent = previous_selected_node
         previous_selected_node = current_node
-        current_node = most_remaining_value_finder(nodes)
+        current_node = minimum_remaining_value_finder(nodes)
         if number_of_assigned_nodes != len(nodes):
             forward_checker(input_matrix, nodes, number_of_rows)
 
 for i in input_matrix:
+    line = ""
     for j in i:
-        print(j + "    ")
-    print()
+        line += j + "    "
+    print(line)
 
 
 
