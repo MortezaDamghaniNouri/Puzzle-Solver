@@ -1,9 +1,12 @@
-
+import random
 class node:
     def __init__(self, identifier):
         self.id = identifier
-        self.parent_id = ""
+        self.parent = ""
         self.domain = []
+        # If this variable is true, it means that the node is assigned a value
+        self.assigned = False
+        self.value = ""
 
 
 
@@ -122,134 +125,161 @@ def column_strings_finder(input_matrix, number_of_rows):
     return strings
 
 
-
-
-
-
 # Forward checking part of the algorithm is implemented here
 def forward_checker(input_matrix, nodes, number_of_rows):
     # The equal number of zeros and ones in each row and column is implemented here
     for node in nodes:
-        row, column = row_and_column_finder(node.id)
-        # Checking if the number of zeros and ones are equal in a row
-        just_one_remain_in_row = True
-        j = 0
-        while j < number_of_rows:
-            if j != column:
-                if input_matrix[row][j] == "-":
-                    just_one_remain_in_row = False
-                    break
-            j += 1
-
-        if just_one_remain_in_row:
-            one_counter = 0
+        if not node.assigned:
+            row, column = row_and_column_finder(node.id)
+            # Checking if the number of zeros and ones are equal in a row
+            just_one_remain_in_row = True
             j = 0
             while j < number_of_rows:
-                if input_matrix[row][j] == "1":
-                    one_counter += 1
-                j += 1
-            zero_counter = 0
-            j = 0
-            while j < number_of_rows:
-                if input_matrix[row][j] == "0":
-                    zero_counter += 1
+                if j != column:
+                    if input_matrix[row][j] == "-":
+                        just_one_remain_in_row = False
+                        break
                 j += 1
 
-
-            if zero_counter > one_counter:
-                node.domain.remove("0")
-            if one_counter > zero_counter:
-                node.domain.remove("1")
-
-            # Checking different strings in columns and rows constraint
-            row_strings = row_strings_finder(input_matrix, number_of_rows)
-            if len(row_strings) > 0:
-                current_row_string = ""
+            if just_one_remain_in_row:
+                one_counter = 0
                 j = 0
                 while j < number_of_rows:
-                    current_row_string += input_matrix[row][j]
+                    if input_matrix[row][j] == "1":
+                        one_counter += 1
                     j += 1
-                dash_index = current_row_string.find("-")
-                current_row_list = list(current_row_string)
-                if "0" in node.domain:
-                    current_row_list[dash_index] = "0"
-                    current_row_string = str(current_row_list)
-                    if current_row_string in row_strings:
-                        node.domain.remove("0")
-                if "1" in node.domain:
-                    current_row_list[dash_index] = "1"
-                    current_row_string = str(current_row_list)
-                    if current_row_string in row_strings:
-                        node.domain.remove("1")
-
-        just_one_remain_in_column = True
-        j = 0
-        while j < number_of_rows:
-            if j != row:
-                if input_matrix[j][column] == "-":
-                    just_one_remain_in_column = False
-                    break
-            j += 1
-        if just_one_remain_in_column:
-            one_counter = 0
-            j = 0
-            while j < number_of_rows:
-                if input_matrix[j][column] == "1":
-                    one_counter += 1
-                j += 1
-            zero_counter = 0
-            j = 0
-            while j < number_of_rows:
-                if input_matrix[j][column] == "0":
-                    zero_counter += 1
-                j += 1
-            if zero_counter > one_counter:
-                node.domain.remove("0")
-            if one_counter > zero_counter:
-                node.domain.remove("1")
-
-            # Checking different strings in columns and rows constraint
-            column_strings = column_strings_finder(input_matrix, number_of_rows)
-            if len(column_strings) > 0:
-                current_column_string = ""
+                zero_counter = 0
                 j = 0
                 while j < number_of_rows:
-                    current_column_string += input_matrix[j][column]
+                    if input_matrix[row][j] == "0":
+                        zero_counter += 1
                     j += 1
-                dash_index = current_column_string.find("-")
-                current_column_list = list(current_column_string)
-                if "0" in node.domain:
-                    current_column_list[dash_index] = "0"
-                    current_column_string = str(current_column_list)
-                    if current_column_string in column_strings:
-                        node.domain.remove("0")
-                if "1" in node.domain:
-                    current_column_list[dash_index] = "1"
-                    current_column_string = str(current_column_list)
-                    if current_column_string in column_strings:
-                        node.domain.remove("1")
 
-        # Checking not more than row equal numbers in a column constraint
-        if row - 1 >= 0 and row + 1 < number_of_rows and input_matrix[row - 1][column] == input_matrix[row + 1][column] and input_matrix[row - 1][column] != "-":
-            value = input_matrix[row - 1][column]
-            node.domain.remove(value)
-        if row - 2 >= 0 and input_matrix[row - 2][column] == input_matrix[row - 1][column] and input_matrix[row - 2][column] != "-":
-            value = input_matrix[row - 2][column]
-            node.domain.remove(value)
-        if row + 2 < number_of_rows and input_matrix[row + 2][column] == input_matrix[row + 1][column] and input_matrix[row + 2][column] != "-":
-            value = input_matrix[row + 2][column]
-            node.domain.remove(value)
+                if zero_counter > one_counter:
+                    node.domain.remove("0")
+                if one_counter > zero_counter:
+                    node.domain.remove("1")
 
-        # Checking not more than row equal numbers in a row constraint
-        if column - 1 >= 0 and column + 1 < number_of_rows and input_matrix[row][column - 1] == input_matrix[row][column + 1] and input_matrix[row][column - 1] != "-":
-            value = input_matrix[row][column - 1]
-            node.domain.remove(value)
-        if column - 2 >= 0 and input_matrix[row][column - 2] == input_matrix[row][column - 1] and input_matrix[row][column - 2] != "-":
-            value = input_matrix[row][column - 2]
-            node.domain.remove(value)
-        if column + 2 < number_of_rows and input_matrix[row][column + 2] == input_matrix[row][column + 1] and input_matrix[row][column + 2] != "-":
-            value = input_matrix[row][column + 2]
-            node.domain.remove(value)
+                # Checking different strings in columns and rows constraint
+                row_strings = row_strings_finder(input_matrix, number_of_rows)
+                if len(row_strings) > 0:
+                    current_row_string = ""
+                    j = 0
+                    while j < number_of_rows:
+                        current_row_string += input_matrix[row][j]
+                        j += 1
+                    dash_index = current_row_string.find("-")
+                    current_row_list = list(current_row_string)
+                    if "0" in node.domain:
+                        current_row_list[dash_index] = "0"
+                        current_row_string = str(current_row_list)
+                        if current_row_string in row_strings:
+                            node.domain.remove("0")
+                    if "1" in node.domain:
+                        current_row_list[dash_index] = "1"
+                        current_row_string = str(current_row_list)
+                        if current_row_string in row_strings:
+                            node.domain.remove("1")
+
+            just_one_remain_in_column = True
+            j = 0
+            while j < number_of_rows:
+                if j != row:
+                    if input_matrix[j][column] == "-":
+                        just_one_remain_in_column = False
+                        break
+                j += 1
+            if just_one_remain_in_column:
+                one_counter = 0
+                j = 0
+                while j < number_of_rows:
+                    if input_matrix[j][column] == "1":
+                        one_counter += 1
+                    j += 1
+                zero_counter = 0
+                j = 0
+                while j < number_of_rows:
+                    if input_matrix[j][column] == "0":
+                        zero_counter += 1
+                    j += 1
+                if zero_counter > one_counter:
+                    node.domain.remove("0")
+                if one_counter > zero_counter:
+                    node.domain.remove("1")
+
+                # Checking different strings in columns and rows constraint
+                column_strings = column_strings_finder(input_matrix, number_of_rows)
+                if len(column_strings) > 0:
+                    current_column_string = ""
+                    j = 0
+                    while j < number_of_rows:
+                        current_column_string += input_matrix[j][column]
+                        j += 1
+                    dash_index = current_column_string.find("-")
+                    current_column_list = list(current_column_string)
+                    if "0" in node.domain:
+                        current_column_list[dash_index] = "0"
+                        current_column_string = str(current_column_list)
+                        if current_column_string in column_strings:
+                            node.domain.remove("0")
+                    if "1" in node.domain:
+                        current_column_list[dash_index] = "1"
+                        current_column_string = str(current_column_list)
+                        if current_column_string in column_strings:
+                            node.domain.remove("1")
+
+            # Checking not more than row equal numbers in a column constraint
+            if row - 1 >= 0 and row + 1 < number_of_rows and input_matrix[row - 1][column] == input_matrix[row + 1][
+                column] and input_matrix[row - 1][column] != "-":
+                value = input_matrix[row - 1][column]
+                node.domain.remove(value)
+            if row - 2 >= 0 and input_matrix[row - 2][column] == input_matrix[row - 1][column] and \
+                    input_matrix[row - 2][column] != "-":
+                value = input_matrix[row - 2][column]
+                node.domain.remove(value)
+            if row + 2 < number_of_rows and input_matrix[row + 2][column] == input_matrix[row + 1][column] and \
+                    input_matrix[row + 2][column] != "-":
+                value = input_matrix[row + 2][column]
+                node.domain.remove(value)
+
+            # Checking not more than row equal numbers in a row constraint
+            if column - 1 >= 0 and column + 1 < number_of_rows and input_matrix[row][column - 1] == input_matrix[row][
+                column + 1] and input_matrix[row][column - 1] != "-":
+                value = input_matrix[row][column - 1]
+                node.domain.remove(value)
+            if column - 2 >= 0 and input_matrix[row][column - 2] == input_matrix[row][column - 1] and input_matrix[row][
+                column - 2] != "-":
+                value = input_matrix[row][column - 2]
+                node.domain.remove(value)
+            if column + 2 < number_of_rows and input_matrix[row][column + 2] == input_matrix[row][column + 1] and \
+                    input_matrix[row][column + 2] != "-":
+                value = input_matrix[row][column + 2]
+                node.domain.remove(value)
+
+
+# This function selects a node by MRV method
+def most_remaining_value_finder(nodes):
+    i = 0
+    while i < len(nodes):
+        if not nodes[i].assigned:
+            minimum_remaining_node = nodes[i]
+            break
+        i += 1
+    for node in nodes:
+        if not node.assigned:
+            if len(node.domain) < len(minimum_remaining_node.domain):
+                minimum_remaining_node = node
+    return minimum_remaining_node
+
+
+# This function assigns a value to the input node
+def random_assigner(node):
+    if len(node.domain) == 1:
+        node.value = node.domain[0]
+    else:
+        random_index = random.randint(0, 1)
+        node.value = node.domain[random_index]
+
 
 
 
@@ -262,9 +292,78 @@ input_matrix, number_of_rows = file_reader()
 print(input_matrix)
 
 nodes = nodes_generator(input_matrix, number_of_rows)
-
-
 forward_checker(input_matrix, nodes, number_of_rows)
+root = most_remaining_value_finder(nodes)
+random_assigner(root)
+row, column = row_and_column_finder(root.id)
+input_matrix[row][column] = root.value
+root.assigned = True
+root.parent = node("1")   # This is the root's parent id for finding it
+root.domain.remove(root.value)
+number_of_assigned_nodes = 1
+previous_selected_node = root
+current_node = most_remaining_value_finder(nodes)
+
+# Backtracking algorithm is implemented here
+while number_of_assigned_nodes != len(nodes):
+    if len(current_node.domain) == 0:
+        if current_node.parent.id == "1":
+            print("Error")
+        else:
+            current_node.domain.append("0")
+            current_node.domain.append("1")
+            current_node.value = ""
+            current_node.assigned = False
+            row, column = row_and_column_finder(current_node.id)
+            input_matrix[row][column] = "-"
+            temp = current_node
+            current_node = current_node.parent
+            previous_selected_node = current_node.parent
+            temp.parent = ""
+            number_of_assigned_nodes = number_of_assigned_nodes - 1
+
+    else:
+        random_assigner(current_node)
+        row, column = row_and_column_finder(current_node.id)
+        input_matrix[row][column] = current_node.value
+        current_node.assigned = True
+        number_of_assigned_nodes += 1
+        current_node.domain.remove(current_node.value)
+        current_node.parent = previous_selected_node
+        previous_selected_node = current_node
+        current_node = most_remaining_value_finder(nodes)
+        if number_of_assigned_nodes != len(nodes):
+            forward_checker(input_matrix, nodes, number_of_rows)
+
+for i in input_matrix:
+    for j in i:
+        print(j + "    ")
+    print()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
