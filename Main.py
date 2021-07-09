@@ -11,11 +11,6 @@ class node:
         self.value = ""
 
 
-
-
-
-
-
 # This function checks if the input character is a number or not
 def is_number(input_char):
     if input_char == "0" or input_char == "1" or input_char == "2" or input_char == "3" or input_char == "4" or input_char == "5" or input_char == "6" or input_char == "7" or input_char == "8" or input_char == "9":
@@ -235,25 +230,21 @@ def forward_checker(input_matrix, nodes, number_of_rows):
                             node.domain.remove("1")
 
             # Checking not more than row equal numbers in a column constraint
-            if row - 1 >= 0 and row + 1 < number_of_rows and input_matrix[row - 1][column] == input_matrix[row + 1][
-                column] and input_matrix[row - 1][column] != "-":
+            if row - 1 >= 0 and row + 1 < number_of_rows and input_matrix[row - 1][column] == input_matrix[row + 1][column] and input_matrix[row - 1][column] != "-":
                 value = input_matrix[row - 1][column]
                 if value in node.domain:
                     node.domain.remove(value)
-            if row - 2 >= 0 and input_matrix[row - 2][column] == input_matrix[row - 1][column] and \
-                    input_matrix[row - 2][column] != "-":
+            if row - 2 >= 0 and input_matrix[row - 2][column] == input_matrix[row - 1][column] and input_matrix[row - 2][column] != "-":
                 value = input_matrix[row - 2][column]
                 if value in node.domain:
                     node.domain.remove(value)
-            if row + 2 < number_of_rows and input_matrix[row + 2][column] == input_matrix[row + 1][column] and \
-                    input_matrix[row + 2][column] != "-":
+            if row + 2 < number_of_rows and input_matrix[row + 2][column] == input_matrix[row + 1][column] and input_matrix[row + 2][column] != "-":
                 value = input_matrix[row + 2][column]
                 if value in node.domain:
                     node.domain.remove(value)
 
             # Checking not more than row equal numbers in a row constraint
-            if column - 1 >= 0 and column + 1 < number_of_rows and input_matrix[row][column - 1] == input_matrix[row][
-                column + 1] and input_matrix[row][column - 1] != "-":
+            if column - 1 >= 0 and column + 1 < number_of_rows and input_matrix[row][column - 1] == input_matrix[row][column + 1] and input_matrix[row][column - 1] != "-":
                 value = input_matrix[row][column - 1]
                 if value in node.domain:
                     node.domain.remove(value)
@@ -317,6 +308,28 @@ def does_repetition_exist(input_list):
     return False
 
 
+# This function checks if the number of ones in each row of the input matrix is equal to input number or not
+def number_of_ones_checker(input_matrix, input_number, number_of_rows):
+    for i in input_matrix:
+        one_counter = 0
+        for j in i:
+            if j == "1":
+                one_counter += 1
+        if one_counter != input_number:
+            return False
+
+    i = 0
+    while i < number_of_rows:
+        j = 0
+        one_counter = 0
+        while j < number_of_rows:
+            if input_matrix[j][i] == "1":
+                one_counter += 1
+            j += 1
+        if one_counter != input_number:
+            return False
+        i += 1
+    return True
 
 
 
@@ -350,7 +363,7 @@ while number_of_assigned_nodes != len(nodes):
     if len(current_node.domain) == 0:
         if current_node.parent != "" and current_node.parent.id == "1":
             error_counter += 1
-            if error_counter == 10:
+            if error_counter == 20:
                 print("Error")
                 error = True
                 break
@@ -419,10 +432,29 @@ while number_of_assigned_nodes != len(nodes):
                 root.domain.remove(root.value)
                 number_of_assigned_nodes = 1
                 previous_selected_node = root
-                error_counter = 0
                 current_node = minimum_remaining_value_finder(nodes)
                 current_node.parent = root
                 error = False
+                continue
+
+            if not number_of_ones_checker(input_matrix, number_of_rows / 2, number_of_rows):
+                input_matrix = input_matrix_copy
+                input_matrix_copy = matrix_copier(input_matrix)
+                nodes = nodes_generator(input_matrix, number_of_rows)
+                forward_checker(input_matrix, nodes, number_of_rows)
+                root = minimum_remaining_value_finder(nodes)
+                random_assigner(root)
+                row, column = row_and_column_finder(root.id)
+                input_matrix[row][column] = root.value
+                root.assigned = True
+                root.parent = node("1")
+                root.domain.remove(root.value)
+                number_of_assigned_nodes = 1
+                previous_selected_node = root
+                current_node = minimum_remaining_value_finder(nodes)
+                current_node.parent = root
+                error = False
+                continue
 
 
 
