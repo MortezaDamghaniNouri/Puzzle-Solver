@@ -235,7 +235,7 @@ def forward_checker(input_matrix, nodes, number_of_rows):
                         if current_column_string in column_strings:
                             node.domain.remove("1")
 
-            # Checking not more than row equal numbers in a column constraint
+            # Checking more than row equal numbers in a column constraint
             if row - 1 >= 0 and row + 1 < number_of_rows and input_matrix[row - 1][column] == input_matrix[row + 1][column] and input_matrix[row - 1][column] != "-":
                 value = input_matrix[row - 1][column]
                 if value in node.domain:
@@ -249,7 +249,7 @@ def forward_checker(input_matrix, nodes, number_of_rows):
                 if value in node.domain:
                     node.domain.remove(value)
 
-            # Checking not more than row equal numbers in a row constraint
+            # Checking more than row equal numbers in a row constraint
             if column - 1 >= 0 and column + 1 < number_of_rows and input_matrix[row][column - 1] == input_matrix[row][column + 1] and input_matrix[row][column - 1] != "-":
                 value = input_matrix[row][column - 1]
                 if value in node.domain:
@@ -346,6 +346,60 @@ def matrix_printer(input_matrix):
             line += j + "    "
         print(line)
     print("=====================================================================")
+
+
+# The AC_3 algorithm is implemented here
+def ac_3(input_nodes, queue, input_matrix, nodes, number_of_rows):
+    first_node = input_nodes[0]
+    second_node = input_nodes[1]
+    first_node_row, first_node_column = row_and_column_finder(first_node.id)
+    second_node_row, second_node_column = row_and_column_finder(second_node.id)
+
+    # Checking for row equal values in a row
+    if first_node_row == second_node_row:
+        if first_node_column + 1 == second_node_column and input_matrix[first_node_row][first_node_column + 2] != "-" and len(second_node.domain) == 1 and second_node.domain[0] == input_matrix[first_node_row][first_node_column + 2]:
+            value = input_matrix[first_node_row][first_node_column + 2]
+            if value in first_node.domain:
+                first_node.domain.remove(value)
+
+        if first_node_column + 2 == second_node_column and input_matrix[first_node_row][first_node_column + 1] != "-" and   len(second_node.domain) == 1 and second_node.domain[0] == input_matrix[first_node_row][first_node_column + 1]:
+            value = input_matrix[first_node_row][first_node_column + 1]
+            if value in first_node.domain:
+                first_node.domain.remove(value)
+
+    # ########################## HERE
+
+
+
+
+
+
+
+
+
+
+
+
+# Maintaning arc consistency algorithm is implemented here
+def maintaining_arc_consistency(input_matrix, nodes, number_of_rows, last_node):
+    queue = []
+    last_node_row, last_node_column = row_and_column_finder(last_node.id)
+    for node in nodes:
+        row, column = row_and_column_finder(node.id)
+        if row != last_node_row and column != last_node_column and (not node.assigned):
+            if row == last_node_row or column == last_node_column:
+                queue.append([node, last_node])
+
+    while len(queue) != 0:
+        ac_3(queue[0], queue, input_matrix, nodes, number_of_rows)
+
+
+
+
+
+
+
+
 
 
 
