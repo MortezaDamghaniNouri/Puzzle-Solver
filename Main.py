@@ -332,7 +332,14 @@ def number_of_ones_checker(input_matrix, input_number, number_of_rows):
     return True
 
 
-
+# This function prints the input matrix
+def matrix_printer(input_matrix):
+    for i in input_matrix:
+        line = ""
+        for j in i:
+            line += j + "    "
+        print(line)
+    print("=====================================================================")
 
 
 
@@ -349,6 +356,7 @@ root = minimum_remaining_value_finder(nodes)
 random_assigner(root)
 row, column = row_and_column_finder(root.id)
 input_matrix[row][column] = root.value
+matrix_printer(input_matrix)
 root.assigned = True
 root.parent = node("1")   # This is the root's parent id for finding it
 root.domain.remove(root.value)
@@ -363,7 +371,7 @@ while number_of_assigned_nodes != len(nodes):
     if len(current_node.domain) == 0:
         if current_node.parent != "" and current_node.parent.id == "1":
             error_counter += 1
-            if error_counter == 20:
+            if error_counter == 200:
                 print("Error")
                 error = True
                 break
@@ -376,6 +384,7 @@ while number_of_assigned_nodes != len(nodes):
                 random_assigner(root)
                 row, column = row_and_column_finder(root.id)
                 input_matrix[row][column] = root.value
+                matrix_printer(input_matrix)
                 root.assigned = True
                 root.parent = node("1")
                 root.domain.remove(root.value)
@@ -390,6 +399,7 @@ while number_of_assigned_nodes != len(nodes):
             current_node.assigned = False
             row, column = row_and_column_finder(current_node.id)
             input_matrix[row][column] = "-"
+            matrix_printer(input_matrix)
             if current_node.parent != "":
                 temp = current_node
                 current_node = current_node.parent
@@ -399,7 +409,6 @@ while number_of_assigned_nodes != len(nodes):
             else:
                 temp = current_node
                 current_node = previous_selected_node
-
                 previous_selected_node = current_node.parent
                 temp.parent = ""
                 number_of_assigned_nodes = number_of_assigned_nodes - 1
@@ -408,6 +417,7 @@ while number_of_assigned_nodes != len(nodes):
         random_assigner(current_node)
         row, column = row_and_column_finder(current_node.id)
         input_matrix[row][column] = current_node.value
+        matrix_printer(input_matrix)
         current_node.assigned = True
         number_of_assigned_nodes += 1
         current_node.domain.remove(current_node.value)
@@ -428,6 +438,7 @@ while number_of_assigned_nodes != len(nodes):
                 random_assigner(root)
                 row, column = row_and_column_finder(root.id)
                 input_matrix[row][column] = root.value
+                matrix_printer(input_matrix)
                 root.assigned = True
                 root.parent = node("1")
                 root.domain.remove(root.value)
@@ -447,6 +458,7 @@ while number_of_assigned_nodes != len(nodes):
                 random_assigner(root)
                 row, column = row_and_column_finder(root.id)
                 input_matrix[row][column] = root.value
+                matrix_printer(input_matrix)
                 root.assigned = True
                 root.parent = node("1")
                 root.domain.remove(root.value)
@@ -458,15 +470,9 @@ while number_of_assigned_nodes != len(nodes):
                 continue
 
 
-
-
-
 if not error:
-    for i in input_matrix:
-        line = ""
-        for j in i:
-            line += j + "    "
-        print(line)
+    print("FINAL RESULT: ")
+    matrix_printer(input_matrix)
 
 
 
