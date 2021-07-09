@@ -49,7 +49,6 @@ def file_reader():
     return input_matrix, number_of_rows, algorithm_number
 
 
-
 # This function generates the nodes which are the variables without any assigned value
 def nodes_generator(input_matrix, input_number_of_rows):
     nodes = []
@@ -425,9 +424,6 @@ def ac_3(input_nodes, queue, input_matrix, nodes, number_of_rows):
             value = input_matrix[first_node_row][first_node_column + 2]
             if value in first_node.domain:
                 first_node.domain.remove(value)
-                if value == "0":
-                    print("1, the first is: " + first_node.id)
-
 
                 for node in nodes:
                     neighbor_row, neighbor_column = row_and_column_finder(node.id)
@@ -440,8 +436,6 @@ def ac_3(input_nodes, queue, input_matrix, nodes, number_of_rows):
             if value in first_node.domain:
                 first_node.domain.remove(value)
 
-                if value == "0":
-                    print("2, the first is: " + first_node.id)
 
 
                 for node in nodes:
@@ -455,8 +449,7 @@ def ac_3(input_nodes, queue, input_matrix, nodes, number_of_rows):
             if value in first_node.domain:
                 first_node.domain.remove(value)
 
-                if value == "0":
-                    print("3, the first is: " + first_node.id)
+
 
                 for node in nodes:
                     neighbor_row, neighbor_column = row_and_column_finder(node.id)
@@ -469,8 +462,6 @@ def ac_3(input_nodes, queue, input_matrix, nodes, number_of_rows):
             if value in first_node.domain:
                 first_node.domain.remove(value)
 
-                if value == "0":
-                    print("4, the first is: " + first_node.id)
 
                 for node in nodes:
                     neighbor_row, neighbor_column = row_and_column_finder(node.id)
@@ -482,9 +473,6 @@ def ac_3(input_nodes, queue, input_matrix, nodes, number_of_rows):
             value = input_matrix[first_node_row][first_node_column - 1]
             if value in first_node.domain:
                 first_node.domain.remove(value)
-
-                if value == "0":
-                    print("5, the first is: " + first_node.id)
 
 
                 for node in nodes:
@@ -498,8 +486,6 @@ def ac_3(input_nodes, queue, input_matrix, nodes, number_of_rows):
             if value in first_node.domain:
                 first_node.domain.remove(value)
 
-                if value == "0":
-                    print("6, the first is: " + first_node.id)
 
 
                 for node in nodes:
@@ -516,8 +502,6 @@ def ac_3(input_nodes, queue, input_matrix, nodes, number_of_rows):
                 first_node.domain.remove(value)
 
 
-                if value == "0":
-                    print("7, the first is: " + first_node.id)
 
 
                 for node in nodes:
@@ -531,8 +515,6 @@ def ac_3(input_nodes, queue, input_matrix, nodes, number_of_rows):
             if value in first_node.domain:
                 first_node.domain.remove(value)
 
-                if value == "0":
-                    print("8, the first is: " + first_node.id)
 
 
 
@@ -546,9 +528,6 @@ def ac_3(input_nodes, queue, input_matrix, nodes, number_of_rows):
             value = input_matrix[first_node_row + 1][first_node_column]
             if value in first_node.domain:
                 first_node.domain.remove(value)
-
-                if value == "0":
-                    print("9, the first is: " + first_node.id)
 
 
 
@@ -564,8 +543,6 @@ def ac_3(input_nodes, queue, input_matrix, nodes, number_of_rows):
             if value in first_node.domain:
                 first_node.domain.remove(value)
 
-                if value == "0":
-                    print("10, the first is: " + first_node.id)
 
 
                 for node in nodes:
@@ -579,8 +556,6 @@ def ac_3(input_nodes, queue, input_matrix, nodes, number_of_rows):
             if value in first_node.domain:
                 first_node.domain.remove(value)
 
-                if value == "0":
-                    print("11, the first is: " + first_node.id)
 
 
                 for node in nodes:
@@ -594,19 +569,12 @@ def ac_3(input_nodes, queue, input_matrix, nodes, number_of_rows):
             if value in first_node.domain:
                 first_node.domain.remove(value)
 
-                if value == "0":
-                    print("12, the first is: " + first_node.id)
 
                 for node in nodes:
                     neighbor_row, neighbor_column = row_and_column_finder(node.id)
                     if (not node.assigned) and node.id != first_node.id:
                         if neighbor_row == first_node_row or neighbor_column == first_node_column:
                             queue.append([node, first_node])
-
-
-
-
-
 
 
 # Maintaining arc consistency algorithm is implemented here
@@ -622,17 +590,6 @@ def maintaining_arc_consistency(input_matrix, nodes, number_of_rows, last_node):
     while len(queue) != 0:
         ac_3(queue[0], queue, input_matrix, nodes, number_of_rows)
         queue.pop(0)
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -785,6 +742,7 @@ if algorithm_number == "2":
     root.domain.remove(root.value)
     maintaining_arc_consistency(input_matrix, nodes, number_of_rows, root)
     number_of_assigned_nodes = 1
+    counter = 0
     previous_selected_node = root
     error_counter = 0
     current_node = minimum_remaining_value_finder(nodes)
@@ -846,6 +804,10 @@ if algorithm_number == "2":
             if number_of_assigned_nodes != len(nodes):
                 equal_zeros_and_ones_checker(current_node, input_matrix, number_of_rows)
             if len(current_node.domain) == 0:
+                counter += 1
+                if counter >= 20000:
+                    print("Error")
+                    exit(0)
                 continue
             random_assigner(current_node)
             row, column = row_and_column_finder(current_node.id)
