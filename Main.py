@@ -357,26 +357,128 @@ def ac_3(input_nodes, queue, input_matrix, nodes, number_of_rows):
 
     # Checking for row equal values in a row
     if first_node_row == second_node_row:
-        if first_node_column + 1 == second_node_column and input_matrix[first_node_row][first_node_column + 2] != "-" and len(second_node.domain) == 1 and second_node.domain[0] == input_matrix[first_node_row][first_node_column + 2]:
+        if first_node_column + 1 == second_node_column and first_node_column + 2 < number_of_rows and input_matrix[first_node_row][first_node_column + 2] != "-" and len(second_node.domain) == 1 and second_node.domain[0] == input_matrix[first_node_row][first_node_column + 2]:
             value = input_matrix[first_node_row][first_node_column + 2]
             if value in first_node.domain:
                 first_node.domain.remove(value)
+                for node in nodes:
+                    neighbor_row, neighbor_column = row_and_column_finder(node.id)
+                    if (not node.assigned) and node.id != first_node.id:
+                        if neighbor_row == first_node_row or neighbor_column == first_node_column:
+                            queue.append([node, first_node])
 
-        if first_node_column + 2 == second_node_column and input_matrix[first_node_row][first_node_column + 1] != "-" and   len(second_node.domain) == 1 and second_node.domain[0] == input_matrix[first_node_row][first_node_column + 1]:
+        if first_node_column + 2 == second_node_column and first_node_column + 1 < number_of_rows and input_matrix[first_node_row][first_node_column + 1] != "-" and len(second_node.domain) == 1 and second_node.domain[0] == input_matrix[first_node_row][first_node_column + 1]:
             value = input_matrix[first_node_row][first_node_column + 1]
             if value in first_node.domain:
                 first_node.domain.remove(value)
+                for node in nodes:
+                    neighbor_row, neighbor_column = row_and_column_finder(node.id)
+                    if (not node.assigned) and node.id != first_node.id:
+                        if neighbor_row == first_node_row or neighbor_column == first_node_column:
+                            queue.append([node, first_node])
 
-    # ########################## HERE
+        if first_node_column - 1 == second_node_column and first_node_column + 1 < number_of_rows and input_matrix[first_node_row][first_node_column + 1] != "-" and len(second_node.domain) == 1 and second_node.domain[0] == input_matrix[first_node_row][first_node_column + 1]:
+            value = input_matrix[first_node_row][first_node_column + 1]
+            if value in first_node.domain:
+                first_node.domain.remove(value)
+                for node in nodes:
+                    neighbor_row, neighbor_column = row_and_column_finder(node.id)
+                    if (not node.assigned) and node.id != first_node.id:
+                        if neighbor_row == first_node_row or neighbor_column == first_node_column:
+                            queue.append([node, first_node])
+
+        if first_node_column + 1 == second_node_column and first_node_column - 1 >= 0 and input_matrix[first_node_row][first_node_column - 1] != "-" and len(second_node.domain) == 1 and second_node.domain[0] == input_matrix[first_node_row][first_node_column - 1]:
+            value = input_matrix[first_node_row][first_node_column - 1]
+            if value in first_node.domain:
+                first_node.domain.remove(value)
+                for node in nodes:
+                    neighbor_row, neighbor_column = row_and_column_finder(node.id)
+                    if (not node.assigned) and node.id != first_node.id:
+                        if neighbor_row == first_node_row or neighbor_column == first_node_column:
+                            queue.append([node, first_node])
+
+        if first_node_column - 2 == second_node_column and first_node_column - 1 >= 0 and input_matrix[first_node_row][first_node_column - 1] != "-" and len(second_node.domain) == 1 and second_node.domain[0] == input_matrix[first_node_row][first_node_column - 1]:
+            value = input_matrix[first_node_row][first_node_column - 1]
+            if value in first_node.domain:
+                first_node.domain.remove(value)
+                for node in nodes:
+                    neighbor_row, neighbor_column = row_and_column_finder(node.id)
+                    if (not node.assigned) and node.id != first_node.id:
+                        if neighbor_row == first_node_row or neighbor_column == first_node_column:
+                            queue.append([node, first_node])
+
+        if first_node_column - 1 == second_node_column and first_node_column - 2 >= 0 and input_matrix[first_node_row][first_node_column - 2] != "-" and len(second_node.domain) == 1 and second_node.domain[0] == input_matrix[first_node_row][first_node_column - 2]:
+            value = input_matrix[first_node_row][first_node_column - 2]
+            if value in first_node.domain:
+                first_node.domain.remove(value)
+                for node in nodes:
+                    neighbor_row, neighbor_column = row_and_column_finder(node.id)
+                    if (not node.assigned) and node.id != first_node.id:
+                        if neighbor_row == first_node_row or neighbor_column == first_node_column:
+                            queue.append([node, first_node])
+
+    # Checking for row equal values in a row
+    if first_node_column == second_node_column:
+        if first_node_row + 1 == second_node_row and first_node_row + 2 < number_of_rows and input_matrix[first_node_row + 2][first_node_column] != "-" and len(second_node.domain) == 1 and second_node.domain[0] == input_matrix[first_node_row + 2][first_node_column]:
+            value = input_matrix[first_node_row + 2][first_node_column]
+            if value in first_node.domain:
+                first_node.domain.remove(value)
+                for node in nodes:
+                    neighbor_row, neighbor_column = row_and_column_finder(node.id)
+                    if (not node.assigned) and node.id != first_node.id:
+                        if neighbor_row == first_node_row or neighbor_column == first_node_column:
+                            queue.append([node, first_node])
+
+        if first_node_row + 2 == second_node_row and first_node_row + 1 < number_of_rows and input_matrix[first_node_row + 1][first_node_column] != "-" and len(second_node.domain) == 1 and second_node.domain[0] == input_matrix[first_node_row + 1][first_node_column]:
+            value = input_matrix[first_node_row + 1][first_node_column]
+            if value in first_node.domain:
+                first_node.domain.remove(value)
+                for node in nodes:
+                    neighbor_row, neighbor_column = row_and_column_finder(node.id)
+                    if (not node.assigned) and node.id != first_node.id:
+                        if neighbor_row == first_node_row or neighbor_column == first_node_column:
+                            queue.append([node, first_node])
+
+        if first_node_row - 1 == second_node_row and first_node_row + 1 < number_of_rows and input_matrix[first_node_row + 1][first_node_column] != "-" and len(second_node.domain) == 1 and second_node.domain[0] == input_matrix[first_node_row + 1][first_node_column]:
+            value = input_matrix[first_node_row + 1][first_node_column]
+            if value in first_node.domain:
+                first_node.domain.remove(value)
+                for node in nodes:
+                    neighbor_row, neighbor_column = row_and_column_finder(node.id)
+                    if (not node.assigned) and node.id != first_node.id:
+                        if neighbor_row == first_node_row or neighbor_column == first_node_column:
+                            queue.append([node, first_node])
 
 
+        if first_node_row + 1 == second_node_row and first_node_row - 1 >= 0 and input_matrix[first_node_row - 1][first_node_column] != "-" and len(second_node.domain) == 1 and second_node.domain[0] == input_matrix[first_node_row - 1][first_node_column]:
+            value = input_matrix[first_node_row - 1][first_node_column]
+            if value in first_node.domain:
+                first_node.domain.remove(value)
+                for node in nodes:
+                    neighbor_row, neighbor_column = row_and_column_finder(node.id)
+                    if (not node.assigned) and node.id != first_node.id:
+                        if neighbor_row == first_node_row or neighbor_column == first_node_column:
+                            queue.append([node, first_node])
 
+        if first_node_row - 2 == second_node_row and first_node_row - 1 >= 0 and input_matrix[first_node_row - 1][first_node_column] != "-" and len(second_node.domain) == 1 and second_node.domain[0] == input_matrix[first_node_row - 1][first_node_column]:
+            value = input_matrix[first_node_row - 1][first_node_column]
+            if value in first_node.domain:
+                first_node.domain.remove(value)
+                for node in nodes:
+                    neighbor_row, neighbor_column = row_and_column_finder(node.id)
+                    if (not node.assigned) and node.id != first_node.id:
+                        if neighbor_row == first_node_row or neighbor_column == first_node_column:
+                            queue.append([node, first_node])
 
-
-
-
-
-
+        if first_node_row - 1 == second_node_row and first_node_row - 2 >= 0 and input_matrix[first_node_row - 2][first_node_column] != "-" and len(second_node.domain) == 1 and second_node.domain[0] == input_matrix[first_node_row - 2][first_node_column]:
+            value = input_matrix[first_node_row - 2][first_node_column]
+            if value in first_node.domain:
+                first_node.domain.remove(value)
+                for node in nodes:
+                    neighbor_row, neighbor_column = row_and_column_finder(node.id)
+                    if (not node.assigned) and node.id != first_node.id:
+                        if neighbor_row == first_node_row or neighbor_column == first_node_column:
+                            queue.append([node, first_node])
 
 
 
@@ -386,7 +488,7 @@ def maintaining_arc_consistency(input_matrix, nodes, number_of_rows, last_node):
     last_node_row, last_node_column = row_and_column_finder(last_node.id)
     for node in nodes:
         row, column = row_and_column_finder(node.id)
-        if row != last_node_row and column != last_node_column and (not node.assigned):
+        if node.id != last_node.id and (not node.assigned):
             if row == last_node_row or column == last_node_column:
                 queue.append([node, last_node])
 
