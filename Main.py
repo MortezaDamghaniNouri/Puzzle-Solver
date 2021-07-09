@@ -293,6 +293,33 @@ def random_assigner(node):
         node.value = node.domain[random_index]
 
 
+# This function generates a copy of the input matrix
+def matrix_copier(input_matrix):
+    copy_matrix = []
+    for k in input_matrix:
+        temp = []
+        for m in k:
+            temp.append(m)
+        copy_matrix.append(temp)
+    return copy_matrix
+
+
+# This function checks if repetition exists among strings in the input list
+def does_repetition_exist(input_list):
+    i = 0
+    while i < len(input_list) - 1:
+        j = i + 1
+        while j < len(input_list):
+            if input_list[i] == input_list[j]:
+                return True
+            j += 1
+        i += 1
+    return False
+
+
+
+
+
 
 
 
@@ -302,9 +329,7 @@ def random_assigner(node):
 # Main part of the code starts here
 input_matrix, number_of_rows = file_reader()
 # print(input_matrix)
-
-
-
+input_matrix_copy = matrix_copier(input_matrix)
 nodes = nodes_generator(input_matrix, number_of_rows)
 forward_checker(input_matrix, nodes, number_of_rows)
 root = minimum_remaining_value_finder(nodes)
@@ -316,14 +341,35 @@ root.parent = node("1")   # This is the root's parent id for finding it
 root.domain.remove(root.value)
 number_of_assigned_nodes = 1
 previous_selected_node = root
+error_counter = 0
 current_node = minimum_remaining_value_finder(nodes)
 current_node.parent = root
-
+error = False
 # Backtracking algorithm is implemented here
 while number_of_assigned_nodes != len(nodes):
     if len(current_node.domain) == 0:
         if current_node.parent != "" and current_node.parent.id == "1":
-            print("Error")
+            error_counter += 1
+            if error_counter == 10:
+                print("Error")
+                error = True
+                break
+            else:
+                input_matrix = input_matrix_copy
+                input_matrix_copy = matrix_copier(input_matrix)
+                nodes = nodes_generator(input_matrix, number_of_rows)
+                forward_checker(input_matrix, nodes, number_of_rows)
+                root = minimum_remaining_value_finder(nodes)
+                random_assigner(root)
+                row, column = row_and_column_finder(root.id)
+                input_matrix[row][column] = root.value
+                root.assigned = True
+                root.parent = node("1")
+                root.domain.remove(root.value)
+                number_of_assigned_nodes = 1
+                previous_selected_node = root
+                current_node = minimum_remaining_value_finder(nodes)
+                current_node.parent = root
         else:
             current_node.domain.append("0")
             current_node.domain.append("1")
@@ -356,17 +402,38 @@ while number_of_assigned_nodes != len(nodes):
         current_node = minimum_remaining_value_finder(nodes)
         if number_of_assigned_nodes != len(nodes):
             forward_checker(input_matrix, nodes, number_of_rows)
+        else:
+            row_strings = row_strings_finder(input_matrix, number_of_rows)
+            column_strings = column_strings_finder(input_matrix, number_of_rows)
+            if does_repetition_exist(row_strings) or does_repetition_exist(column_strings):
+                input_matrix = input_matrix_copy
+                input_matrix_copy = matrix_copier(input_matrix)
+                nodes = nodes_generator(input_matrix, number_of_rows)
+                forward_checker(input_matrix, nodes, number_of_rows)
+                root = minimum_remaining_value_finder(nodes)
+                random_assigner(root)
+                row, column = row_and_column_finder(root.id)
+                input_matrix[row][column] = root.value
+                root.assigned = True
+                root.parent = node("1")
+                root.domain.remove(root.value)
+                number_of_assigned_nodes = 1
+                previous_selected_node = root
+                error_counter = 0
+                current_node = minimum_remaining_value_finder(nodes)
+                current_node.parent = root
+                error = False
 
 
 
 
 
-
-for i in input_matrix:
-    line = ""
-    for j in i:
-        line += j + "    "
-    print(line)
+if not error:
+    for i in input_matrix:
+        line = ""
+        for j in i:
+            line += j + "    "
+        print(line)
 
 
 
