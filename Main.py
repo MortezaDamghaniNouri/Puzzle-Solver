@@ -399,6 +399,7 @@ while number_of_assigned_nodes != len(nodes):
             else:
                 temp = current_node
                 current_node = previous_selected_node
+
                 previous_selected_node = current_node.parent
                 temp.parent = ""
                 number_of_assigned_nodes = number_of_assigned_nodes - 1
