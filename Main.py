@@ -257,13 +257,11 @@ def forward_checker(input_matrix, nodes, number_of_rows):
                 value = input_matrix[row][column - 1]
                 if value in node.domain:
                     node.domain.remove(value)
-            if column - 2 >= 0 and input_matrix[row][column - 2] == input_matrix[row][column - 1] and input_matrix[row][
-                column - 2] != "-":
+            if column - 2 >= 0 and input_matrix[row][column - 2] == input_matrix[row][column - 1] and input_matrix[row][column - 2] != "-":
                 value = input_matrix[row][column - 2]
                 if value in node.domain:
                     node.domain.remove(value)
-            if column + 2 < number_of_rows and input_matrix[row][column + 2] == input_matrix[row][column + 1] and \
-                    input_matrix[row][column + 2] != "-":
+            if column + 2 < number_of_rows and input_matrix[row][column + 2] == input_matrix[row][column + 1] and input_matrix[row][column + 2] != "-":
                 value = input_matrix[row][column + 2]
                 if value in node.domain:
                     node.domain.remove(value)
@@ -305,6 +303,8 @@ def random_assigner(node):
 input_matrix, number_of_rows = file_reader()
 # print(input_matrix)
 
+
+
 nodes = nodes_generator(input_matrix, number_of_rows)
 forward_checker(input_matrix, nodes, number_of_rows)
 root = minimum_remaining_value_finder(nodes)
@@ -331,11 +331,18 @@ while number_of_assigned_nodes != len(nodes):
             current_node.assigned = False
             row, column = row_and_column_finder(current_node.id)
             input_matrix[row][column] = "-"
-            temp = current_node
-            current_node = current_node.parent
-            previous_selected_node = current_node.parent
-            temp.parent = ""
-            number_of_assigned_nodes = number_of_assigned_nodes - 1
+            if current_node.parent != "":
+                temp = current_node
+                current_node = current_node.parent
+                previous_selected_node = current_node.parent
+                temp.parent = ""
+                number_of_assigned_nodes = number_of_assigned_nodes - 1
+            else:
+                temp = current_node
+                current_node = previous_selected_node
+                previous_selected_node = current_node.parent
+                temp.parent = ""
+                number_of_assigned_nodes = number_of_assigned_nodes - 1
 
     else:
         random_assigner(current_node)
@@ -349,6 +356,11 @@ while number_of_assigned_nodes != len(nodes):
         current_node = minimum_remaining_value_finder(nodes)
         if number_of_assigned_nodes != len(nodes):
             forward_checker(input_matrix, nodes, number_of_rows)
+
+
+
+
+
 
 for i in input_matrix:
     line = ""
