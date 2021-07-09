@@ -22,6 +22,11 @@ def is_number(input_char):
 # This function reads the input file
 def file_reader():
     file_name = input("Enter the full name of the input file(it must contain .txt): ")
+    while True:
+        algorithm_number = input("Enter the number of algorithm you want to run: \n1)Forward Checking\n2)MAC(Maintaining Arc Consistency)\n")
+        if algorithm_number == "1" or algorithm_number == "2":
+            break
+        print("Wrong input")
     input_file = open("puzzles/" + file_name, "rt")
     chunk = input_file.read(1)
     number_of_rows = ""
@@ -41,7 +46,8 @@ def file_reader():
             chunk = input_file.read(1)
             counter += 1
         input_matrix.append(temp)
-    return input_matrix, number_of_rows
+    return input_matrix, number_of_rows, algorithm_number
+
 
 
 # This function generates the nodes which are the variables without any assigned value
@@ -347,178 +353,137 @@ def matrix_printer(input_matrix):
 
 
 # Main part of the code starts here
-input_matrix, number_of_rows = file_reader()
-# print(input_matrix)
-input_matrix_copy = matrix_copier(input_matrix)
-nodes = nodes_generator(input_matrix, number_of_rows)
-forward_checker(input_matrix, nodes, number_of_rows)
-root = minimum_remaining_value_finder(nodes)
-random_assigner(root)
-row, column = row_and_column_finder(root.id)
-input_matrix[row][column] = root.value
-matrix_printer(input_matrix)
-root.assigned = True
-root.parent = node("1")   # This is the root's parent id for finding it
-root.domain.remove(root.value)
-number_of_assigned_nodes = 1
-previous_selected_node = root
-error_counter = 0
-current_node = minimum_remaining_value_finder(nodes)
-current_node.parent = root
-error = False
-# Backtracking algorithm is implemented here
-while number_of_assigned_nodes != len(nodes):
-    if len(current_node.domain) == 0:
-        if current_node.parent != "" and current_node.parent.id == "1":
-            error_counter += 1
-            if error_counter == 200:
-                print("Error")
-                error = True
-                break
-            else:
-                input_matrix = input_matrix_copy
-                input_matrix_copy = matrix_copier(input_matrix)
-                nodes = nodes_generator(input_matrix, number_of_rows)
-                forward_checker(input_matrix, nodes, number_of_rows)
-                root = minimum_remaining_value_finder(nodes)
-                random_assigner(root)
-                row, column = row_and_column_finder(root.id)
-                input_matrix[row][column] = root.value
-                matrix_printer(input_matrix)
-                root.assigned = True
-                root.parent = node("1")
-                root.domain.remove(root.value)
-                number_of_assigned_nodes = 1
-                previous_selected_node = root
-                current_node = minimum_remaining_value_finder(nodes)
-                current_node.parent = root
-        else:
-            current_node.domain.append("0")
-            current_node.domain.append("1")
-            current_node.value = ""
-            current_node.assigned = False
-            row, column = row_and_column_finder(current_node.id)
-            input_matrix[row][column] = "-"
-            matrix_printer(input_matrix)
-            if current_node.parent != "":
-                temp = current_node
-                current_node = current_node.parent
-                previous_selected_node = current_node.parent
-                temp.parent = ""
-                number_of_assigned_nodes = number_of_assigned_nodes - 1
-            else:
-                temp = current_node
-                current_node = previous_selected_node
-                previous_selected_node = current_node.parent
-                temp.parent = ""
-                number_of_assigned_nodes = number_of_assigned_nodes - 1
-
-    else:
-        random_assigner(current_node)
-        row, column = row_and_column_finder(current_node.id)
-        input_matrix[row][column] = current_node.value
-        matrix_printer(input_matrix)
-        current_node.assigned = True
-        number_of_assigned_nodes += 1
-        current_node.domain.remove(current_node.value)
-        current_node.parent = previous_selected_node
-        previous_selected_node = current_node
-        current_node = minimum_remaining_value_finder(nodes)
-        if number_of_assigned_nodes != len(nodes):
-            forward_checker(input_matrix, nodes, number_of_rows)
-        else:
-            row_strings = row_strings_finder(input_matrix, number_of_rows)
-            column_strings = column_strings_finder(input_matrix, number_of_rows)
-            if does_repetition_exist(row_strings) or does_repetition_exist(column_strings):
-                input_matrix = input_matrix_copy
-                input_matrix_copy = matrix_copier(input_matrix)
-                nodes = nodes_generator(input_matrix, number_of_rows)
-                forward_checker(input_matrix, nodes, number_of_rows)
-                root = minimum_remaining_value_finder(nodes)
-                random_assigner(root)
-                row, column = row_and_column_finder(root.id)
-                input_matrix[row][column] = root.value
-                matrix_printer(input_matrix)
-                root.assigned = True
-                root.parent = node("1")
-                root.domain.remove(root.value)
-                number_of_assigned_nodes = 1
-                previous_selected_node = root
-                current_node = minimum_remaining_value_finder(nodes)
-                current_node.parent = root
-                error = False
-                continue
-
-            if not number_of_ones_checker(input_matrix, number_of_rows / 2, number_of_rows):
-                input_matrix = input_matrix_copy
-                input_matrix_copy = matrix_copier(input_matrix)
-                nodes = nodes_generator(input_matrix, number_of_rows)
-                forward_checker(input_matrix, nodes, number_of_rows)
-                root = minimum_remaining_value_finder(nodes)
-                random_assigner(root)
-                row, column = row_and_column_finder(root.id)
-                input_matrix[row][column] = root.value
-                matrix_printer(input_matrix)
-                root.assigned = True
-                root.parent = node("1")
-                root.domain.remove(root.value)
-                number_of_assigned_nodes = 1
-                previous_selected_node = root
-                current_node = minimum_remaining_value_finder(nodes)
-                current_node.parent = root
-                error = False
-                continue
-
-
-if not error:
-    print("FINAL RESULT: ")
+input_matrix, number_of_rows, algorithm_number = file_reader()
+if algorithm_number == "1":
     matrix_printer(input_matrix)
+    input_matrix_copy = matrix_copier(input_matrix)
+    nodes = nodes_generator(input_matrix, number_of_rows)
+    forward_checker(input_matrix, nodes, number_of_rows)
+    root = minimum_remaining_value_finder(nodes)
+    random_assigner(root)
+    row, column = row_and_column_finder(root.id)
+    input_matrix[row][column] = root.value
+    matrix_printer(input_matrix)
+    root.assigned = True
+    root.parent = node("1")  # This is the root's parent id for finding it
+    root.domain.remove(root.value)
+    number_of_assigned_nodes = 1
+    previous_selected_node = root
+    error_counter = 0
+    current_node = minimum_remaining_value_finder(nodes)
+    current_node.parent = root
+    error = False
+    # Backtracking algorithm is implemented here
+    while number_of_assigned_nodes != len(nodes):
+        if len(current_node.domain) == 0:
+            if current_node.parent != "" and current_node.parent.id == "1":
+                error_counter += 1
+                if error_counter == 200:
+                    print("Error")
+                    error = True
+                    break
+                else:
+                    input_matrix = input_matrix_copy
+                    input_matrix_copy = matrix_copier(input_matrix)
+                    nodes = nodes_generator(input_matrix, number_of_rows)
+                    forward_checker(input_matrix, nodes, number_of_rows)
+                    root = minimum_remaining_value_finder(nodes)
+                    random_assigner(root)
+                    row, column = row_and_column_finder(root.id)
+                    input_matrix[row][column] = root.value
+                    matrix_printer(input_matrix)
+                    root.assigned = True
+                    root.parent = node("1")
+                    root.domain.remove(root.value)
+                    number_of_assigned_nodes = 1
+                    previous_selected_node = root
+                    current_node = minimum_remaining_value_finder(nodes)
+                    current_node.parent = root
+            else:
+                current_node.domain.append("0")
+                current_node.domain.append("1")
+                current_node.value = ""
+                current_node.assigned = False
+                row, column = row_and_column_finder(current_node.id)
+                input_matrix[row][column] = "-"
+                matrix_printer(input_matrix)
+                if current_node.parent != "":
+                    temp = current_node
+                    current_node = current_node.parent
+                    previous_selected_node = current_node.parent
+                    temp.parent = ""
+                    number_of_assigned_nodes = number_of_assigned_nodes - 1
+                else:
+                    temp = current_node
+                    current_node = previous_selected_node
+                    previous_selected_node = current_node.parent
+                    temp.parent = ""
+                    number_of_assigned_nodes = number_of_assigned_nodes - 1
+
+        else:
+            random_assigner(current_node)
+            row, column = row_and_column_finder(current_node.id)
+            input_matrix[row][column] = current_node.value
+            matrix_printer(input_matrix)
+            current_node.assigned = True
+            number_of_assigned_nodes += 1
+            current_node.domain.remove(current_node.value)
+            current_node.parent = previous_selected_node
+            previous_selected_node = current_node
+            current_node = minimum_remaining_value_finder(nodes)
+            if number_of_assigned_nodes != len(nodes):
+                forward_checker(input_matrix, nodes, number_of_rows)
+            else:
+                row_strings = row_strings_finder(input_matrix, number_of_rows)
+                column_strings = column_strings_finder(input_matrix, number_of_rows)
+                if does_repetition_exist(row_strings) or does_repetition_exist(column_strings):
+                    input_matrix = input_matrix_copy
+                    input_matrix_copy = matrix_copier(input_matrix)
+                    nodes = nodes_generator(input_matrix, number_of_rows)
+                    forward_checker(input_matrix, nodes, number_of_rows)
+                    root = minimum_remaining_value_finder(nodes)
+                    random_assigner(root)
+                    row, column = row_and_column_finder(root.id)
+                    input_matrix[row][column] = root.value
+                    matrix_printer(input_matrix)
+                    root.assigned = True
+                    root.parent = node("1")
+                    root.domain.remove(root.value)
+                    number_of_assigned_nodes = 1
+                    previous_selected_node = root
+                    current_node = minimum_remaining_value_finder(nodes)
+                    current_node.parent = root
+                    error = False
+                    continue
+
+                if not number_of_ones_checker(input_matrix, number_of_rows / 2, number_of_rows):
+                    input_matrix = input_matrix_copy
+                    input_matrix_copy = matrix_copier(input_matrix)
+                    nodes = nodes_generator(input_matrix, number_of_rows)
+                    forward_checker(input_matrix, nodes, number_of_rows)
+                    root = minimum_remaining_value_finder(nodes)
+                    random_assigner(root)
+                    row, column = row_and_column_finder(root.id)
+                    input_matrix[row][column] = root.value
+                    matrix_printer(input_matrix)
+                    root.assigned = True
+                    root.parent = node("1")
+                    root.domain.remove(root.value)
+                    number_of_assigned_nodes = 1
+                    previous_selected_node = root
+                    current_node = minimum_remaining_value_finder(nodes)
+                    current_node.parent = root
+                    error = False
+                    continue
+
+    if not error:
+        print("FINAL RESULT: ")
+        matrix_printer(input_matrix)
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+if algorithm_number == "2":
+    pass
 
 
 
