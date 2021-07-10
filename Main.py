@@ -132,66 +132,80 @@ def column_strings_finder(input_matrix, number_of_rows):
 
 
 # This function checks the equal number of ones and zeros in a row and a column
-def equal_zeros_and_ones_checker(last_node, input_matrix, number_of_rows):
-    row, column = row_and_column_finder(last_node.id)
-    # Checking if the number of zeros and ones are equal in a row
-    just_one_remain_in_row = True
-    j = 0
-    while j < number_of_rows:
-        if j != column:
-            if input_matrix[row][j] == "-":
-                just_one_remain_in_row = False
-                break
-        j += 1
+def equal_zeros_and_ones_checker(nodes, input_matrix, number_of_rows):
+    i = 0
+    while i < number_of_rows:
+        dash_counter = 0
+        dashed_cells = []
+        j = 0
+        while j < number_of_rows:
+            if input_matrix[i][j] == "-":
+                dash_counter += 1
+                dashed_cells.append(str(i) + "," + str(j))
+            j += 1
+        if dash_counter == 1:
+            k = 0
+            while k < len(nodes):
+                if nodes[k].id == dashed_cells[0]:
+                    dashed_node = nodes[k]
+                    break
+                k += 1
+            one_counter = 0
+            j = 0
+            while j < number_of_rows:
+                if input_matrix[i][j] == "1":
+                    one_counter += 1
+                j += 1
+            zero_counter = 0
+            j = 0
+            while j < number_of_rows:
+                if input_matrix[i][j] == "0":
+                    zero_counter += 1
+                j += 1
+            if zero_counter > one_counter:
+                if "0" in dashed_node.domain:
+                    dashed_node.domain.remove("0")
+            if one_counter > zero_counter:
+                if "1" in dashed_node.domain:
+                    dashed_node.domain.remove("1")
+        i += 1
 
-    if just_one_remain_in_row:
-        one_counter = 0
+    i = 0
+    while i < number_of_rows:
+        dash_counter = 0
+        dashed_cells = []
         j = 0
         while j < number_of_rows:
-            if input_matrix[row][j] == "1":
-                one_counter += 1
+            if input_matrix[j][i] == "-":
+                dash_counter += 1
+                dashed_cells.append(str(j) + "," + str(i))
             j += 1
-        zero_counter = 0
-        j = 0
-        while j < number_of_rows:
-            if input_matrix[row][j] == "0":
-                zero_counter += 1
-            j += 1
-
-        if zero_counter > one_counter:
-            if "0" in last_node.domain:
-                last_node.domain.remove("0")
-        if one_counter > zero_counter:
-            if "1" in last_node.domain:
-                last_node.domain.remove("1")
-
-    just_one_remain_in_column = True
-    j = 0
-    while j < number_of_rows:
-        if j != row:
-            if input_matrix[j][column] == "-":
-                just_one_remain_in_column = False
-                break
-        j += 1
-    if just_one_remain_in_column:
-        one_counter = 0
-        j = 0
-        while j < number_of_rows:
-            if input_matrix[j][column] == "1":
-                one_counter += 1
-            j += 1
-        zero_counter = 0
-        j = 0
-        while j < number_of_rows:
-            if input_matrix[j][column] == "0":
-                zero_counter += 1
-            j += 1
-        if zero_counter > one_counter:
-            if "0" in last_node.domain:
-                last_node.domain.remove("0")
-        if one_counter > zero_counter:
-            if "1" in last_node.domain:
-                last_node.domain.remove("1")
+        if dash_counter == 1:
+            k = 0
+            while k < len(nodes):
+                if nodes[k].id == dashed_cells[0]:
+                    dashed_node = nodes[k]
+                    break
+                k += 1
+            one_counter = 0
+            j = 0
+            while j < number_of_rows:
+                if input_matrix[j][i] == "1":
+                    one_counter += 1
+                j += 1
+            zero_counter = 0
+            j = 0
+            while j < number_of_rows:
+                if input_matrix[j][i] == "0":
+                    zero_counter += 1
+                j += 1
+            if zero_counter > one_counter:
+                if "0" in dashed_node.domain:
+                    dashed_node.domain.remove("0")
+            if one_counter > zero_counter:
+                if "1" in dashed_node.domain:
+                    dashed_node.domain.remove("1")
+        i += 1
 
 
 # Forward checking part of the algorithm is implemented here
@@ -412,6 +426,28 @@ def matrix_printer(input_matrix):
             line += j + "    "
         print(line)
     print("=====================================================================")
+
+
+# This function checks the number of ones and zeros in a row
+def row_numbers_checker(input_matrix, number_of_rows):
+    i = 0
+    while i < number_of_rows:
+        j = 0
+        while j <= number_of_rows - 3:
+            if input_matrix[i][j] == input_matrix[i][j + 1] and input_matrix[i][j + 1] == input_matrix[i][j + 2]:
+                return False
+            j += 1
+        i += 1
+
+    i = 0
+    while i < number_of_rows:
+        j = 0
+        while j <= number_of_rows - 3:
+            if input_matrix[j][i] == input_matrix[j + 1][i] and input_matrix[j + 1][i] == input_matrix[j + 2][i]:
+                return False
+            j += 1
+        i += 1
+    return True
 
 
 # The AC_3 algorithm is implemented here
@@ -725,22 +761,22 @@ if algorithm_number == "1":
     if not error:
         print("FINAL RESULT: ")
         matrix_printer(input_matrix)
-    forward_checking_stop_time = time.time()
-    print("Time: " + str(round(forward_checking_stop_time - forward_checking_start_time, 2)) + " s")
+        forward_checking_stop_time = time.time()
+        print("Time: " + str(round(forward_checking_stop_time - forward_checking_start_time, 3)) + " s")
 
 
 
 if algorithm_number == "2":
-    mac_start_time = time.time() # Starting timer
+    mac_start_time = time.time()    # Starting timer
     matrix_printer(input_matrix)
     input_matrix_copy = matrix_copier(input_matrix)
     nodes = nodes_generator(input_matrix, number_of_rows)
     root = minimum_remaining_value_finder(nodes)
-    equal_zeros_and_ones_checker(root, input_matrix, number_of_rows)
+    equal_zeros_and_ones_checker(nodes, input_matrix, number_of_rows)
     if len(root.domain) != 0:
         random_assigner(root)
     else:
-        print("Error")
+        print("Error1")
         exit(0)
     row, column = row_and_column_finder(root.id)
     input_matrix[row][column] = root.value
@@ -761,8 +797,8 @@ if algorithm_number == "2":
         if len(current_node.domain) == 0:
             if current_node.parent != "" and current_node.parent.id == "1":
                 error_counter += 1
-                if error_counter == 20:
-                    print("Error")
+                if error_counter == 400:
+                    print("Error2")
                     error = True
                     break
                 else:
@@ -770,11 +806,11 @@ if algorithm_number == "2":
                     input_matrix_copy = matrix_copier(input_matrix)
                     nodes = nodes_generator(input_matrix, number_of_rows)
                     root = minimum_remaining_value_finder(nodes)
-                    equal_zeros_and_ones_checker(root, input_matrix, number_of_rows)
+                    equal_zeros_and_ones_checker(nodes, input_matrix, number_of_rows)
                     if len(root.domain) != 0:
                         random_assigner(root)
                     else:
-                        print("Error")
+                        print("Error3")
                         exit(0)
                     row, column = row_and_column_finder(root.id)
                     input_matrix[row][column] = root.value
@@ -810,11 +846,12 @@ if algorithm_number == "2":
 
         else:
             if number_of_assigned_nodes != len(nodes):
-                equal_zeros_and_ones_checker(current_node, input_matrix, number_of_rows)
+                equal_zeros_and_ones_checker(nodes, input_matrix, number_of_rows)
             if len(current_node.domain) == 0:
                 counter += 1
-                if counter >= 20000:
-                    print("Error")
+                if counter >= 2000:
+
+                    print("Error4")
                     exit(0)
                 continue
             random_assigner(current_node)
@@ -836,11 +873,11 @@ if algorithm_number == "2":
                     input_matrix_copy = matrix_copier(input_matrix)
                     nodes = nodes_generator(input_matrix, number_of_rows)
                     root = minimum_remaining_value_finder(nodes)
-                    equal_zeros_and_ones_checker(root, input_matrix, number_of_rows)
+                    equal_zeros_and_ones_checker(nodes, input_matrix, number_of_rows)
                     if len(root.domain) != 0:
                         random_assigner(root)
                     else:
-                        print("Error")
+                        print("Error5")
                         exit(0)
                     row, column = row_and_column_finder(root.id)
                     input_matrix[row][column] = root.value
@@ -861,11 +898,35 @@ if algorithm_number == "2":
                     input_matrix_copy = matrix_copier(input_matrix)
                     nodes = nodes_generator(input_matrix, number_of_rows)
                     root = minimum_remaining_value_finder(nodes)
-                    equal_zeros_and_ones_checker(root, input_matrix, number_of_rows)
+                    equal_zeros_and_ones_checker(nodes, input_matrix, number_of_rows)
                     if len(root.domain) != 0:
                         random_assigner(root)
                     else:
-                        print("Error")
+                        print("Error6")
+                        exit(0)
+                    row, column = row_and_column_finder(root.id)
+                    input_matrix[row][column] = root.value
+                    matrix_printer(input_matrix)
+                    root.assigned = True
+                    root.parent = node("1")
+                    root.domain.remove(root.value)
+                    maintaining_arc_consistency(input_matrix, nodes, number_of_rows, root)
+                    number_of_assigned_nodes = 1
+                    previous_selected_node = root
+                    current_node = minimum_remaining_value_finder(nodes)
+                    current_node.parent = root
+                    error = False
+                    continue
+                if not row_numbers_checker(input_matrix, number_of_rows):
+                    input_matrix = input_matrix_copy
+                    input_matrix_copy = matrix_copier(input_matrix)
+                    nodes = nodes_generator(input_matrix, number_of_rows)
+                    root = minimum_remaining_value_finder(nodes)
+                    equal_zeros_and_ones_checker(nodes, input_matrix, number_of_rows)
+                    if len(root.domain) != 0:
+                        random_assigner(root)
+                    else:
+                        print("Error7")
                         exit(0)
                     row, column = row_and_column_finder(root.id)
                     input_matrix[row][column] = root.value
@@ -881,11 +942,16 @@ if algorithm_number == "2":
                     error = False
                     continue
 
+
+
+
+
     if not error:
         print("FINAL RESULT: ")
         matrix_printer(input_matrix)
-    mac_stop_time = time.time()
-    print("Time: " + str(round(mac_stop_time - mac_start_time, 2)) + " s")
+        mac_stop_time = time.time()
+        print("Time: " + str(round(mac_stop_time - mac_start_time, 3)) + " s")
+
 
 
 
