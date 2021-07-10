@@ -1,6 +1,10 @@
+# This library is used for generating random numbers for randomly choosing among some variables and values
 import random
+# This library is imported for time measurement
+import time
 
 
+# This class specifies each node in backtracking algorithm
 class node:
     def __init__(self, identifier):
         self.id = identifier
@@ -596,6 +600,7 @@ def maintaining_arc_consistency(input_matrix, nodes, number_of_rows, last_node):
 # Main part of the code starts here
 input_matrix, number_of_rows, algorithm_number = file_reader()
 if algorithm_number == "1":
+    forward_checking_start_time = time.time()   # Starting timer
     matrix_printer(input_matrix)
     input_matrix_copy = matrix_copier(input_matrix)
     nodes = nodes_generator(input_matrix, number_of_rows)
@@ -720,10 +725,13 @@ if algorithm_number == "1":
     if not error:
         print("FINAL RESULT: ")
         matrix_printer(input_matrix)
+    forward_checking_stop_time = time.time()
+    print("Time: " + str(round(forward_checking_stop_time - forward_checking_start_time, 2)) + " s")
 
 
 
 if algorithm_number == "2":
+    mac_start_time = time.time() # Starting timer
     matrix_printer(input_matrix)
     input_matrix_copy = matrix_copier(input_matrix)
     nodes = nodes_generator(input_matrix, number_of_rows)
@@ -873,12 +881,11 @@ if algorithm_number == "2":
                     error = False
                     continue
 
-
-
-
     if not error:
         print("FINAL RESULT: ")
         matrix_printer(input_matrix)
+    mac_stop_time = time.time()
+    print("Time: " + str(round(mac_stop_time - mac_start_time, 2)) + " s")
 
 
 
