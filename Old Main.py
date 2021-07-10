@@ -772,7 +772,7 @@ if algorithm_number == "2":
     input_matrix_copy = matrix_copier(input_matrix)
     nodes = nodes_generator(input_matrix, number_of_rows)
     root = minimum_remaining_value_finder(nodes)
-    equal_zeros_and_ones_checker(nodes, input_matrix, number_of_rows)
+    # equal_zeros_and_ones_checker(nodes, input_matrix, number_of_rows)
     if len(root.domain) != 0:
         random_assigner(root)
     else:
@@ -784,7 +784,7 @@ if algorithm_number == "2":
     root.assigned = True
     root.parent = node("1")  # This is the root's parent id for finding it
     root.domain.remove(root.value)
-    maintaining_arc_consistency(input_matrix, nodes, number_of_rows, root)
+    # maintaining_arc_consistency(input_matrix, nodes, number_of_rows, root)
     number_of_assigned_nodes = 1
     counter = 0
     previous_selected_node = root
@@ -818,7 +818,7 @@ if algorithm_number == "2":
                     root.assigned = True
                     root.parent = node("1")
                     root.domain.remove(root.value)
-                    maintaining_arc_consistency(input_matrix, nodes, number_of_rows, root)
+                    # maintaining_arc_consistency(input_matrix, nodes, number_of_rows, root)
                     number_of_assigned_nodes = 1
                     previous_selected_node = root
                     current_node = minimum_remaining_value_finder(nodes)
@@ -861,7 +861,7 @@ if algorithm_number == "2":
             current_node.assigned = True
             number_of_assigned_nodes += 1
             current_node.domain.remove(current_node.value)
-            maintaining_arc_consistency(input_matrix, nodes, number_of_rows, current_node)
+            # maintaining_arc_consistency(input_matrix, nodes, number_of_rows, current_node)
             current_node.parent = previous_selected_node
             previous_selected_node = current_node
             current_node = minimum_remaining_value_finder(nodes)
@@ -885,7 +885,7 @@ if algorithm_number == "2":
                     root.assigned = True
                     root.parent = node("1")
                     root.domain.remove(root.value)
-                    maintaining_arc_consistency(input_matrix, nodes, number_of_rows, root)
+                    # maintaining_arc_consistency(input_matrix, nodes, number_of_rows, root)
                     number_of_assigned_nodes = 1
                     previous_selected_node = root
                     current_node = minimum_remaining_value_finder(nodes)
@@ -910,7 +910,7 @@ if algorithm_number == "2":
                     root.assigned = True
                     root.parent = node("1")
                     root.domain.remove(root.value)
-                    maintaining_arc_consistency(input_matrix, nodes, number_of_rows, root)
+                    # maintaining_arc_consistency(input_matrix, nodes, number_of_rows, root)
                     number_of_assigned_nodes = 1
                     previous_selected_node = root
                     current_node = minimum_remaining_value_finder(nodes)
@@ -934,7 +934,7 @@ if algorithm_number == "2":
                     root.assigned = True
                     root.parent = node("1")
                     root.domain.remove(root.value)
-                    maintaining_arc_consistency(input_matrix, nodes, number_of_rows, root)
+                    # maintaining_arc_consistency(input_matrix, nodes, number_of_rows, root)
                     number_of_assigned_nodes = 1
                     previous_selected_node = root
                     current_node = minimum_remaining_value_finder(nodes)
