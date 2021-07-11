@@ -135,9 +135,9 @@ def column_strings_finder(input_matrix, number_of_rows):
 
 # This function checks the equal number of ones and zeros in a row and a column
 def equal_zeros_and_ones_checker(nodes, input_matrix, number_of_rows):
-    for node in nodes:
-        if not node.assigned:
-            row, column = row_and_column_finder(node.id)
+    for n in nodes:
+        if not n.assigned:
+            row, column = row_and_column_finder(n.id)
             just_one_remain_in_row = True
             j = 0
             while j < number_of_rows:
@@ -162,11 +162,11 @@ def equal_zeros_and_ones_checker(nodes, input_matrix, number_of_rows):
                     j += 1
 
                 if zero_counter > one_counter:
-                    if "0" in node.domain:
-                        node.domain.remove("0")
+                    if "0" in n.domain:
+                        n.domain.remove("0")
                 if one_counter > zero_counter:
-                    if "1" in node.domain:
-                        node.domain.remove("1")
+                    if "1" in n.domain:
+                        n.domain.remove("1")
                 row_strings = row_strings_finder(input_matrix, number_of_rows)
                 if len(row_strings) > 0:
                     current_row_string = ""
@@ -176,16 +176,16 @@ def equal_zeros_and_ones_checker(nodes, input_matrix, number_of_rows):
                         j += 1
                     dash_index = current_row_string.find("-")
                     current_row_list = list(current_row_string)
-                    if "0" in node.domain:
+                    if "0" in n.domain:
                         current_row_list[dash_index] = "0"
                         current_row_string = str(current_row_list)
                         if current_row_string in row_strings:
-                            node.domain.remove("0")
-                    if "1" in node.domain:
+                            n.domain.remove("0")
+                    if "1" in n.domain:
                         current_row_list[dash_index] = "1"
                         current_row_string = str(current_row_list)
                         if current_row_string in row_strings:
-                            node.domain.remove("1")
+                            n.domain.remove("1")
             just_one_remain_in_column = True
             j = 0
             while j < number_of_rows:
@@ -208,11 +208,11 @@ def equal_zeros_and_ones_checker(nodes, input_matrix, number_of_rows):
                         zero_counter += 1
                     j += 1
                 if zero_counter > one_counter:
-                    if "0" in node.domain:
-                        node.domain.remove("0")
+                    if "0" in n.domain:
+                        n.domain.remove("0")
                 if one_counter > zero_counter:
-                    if "1" in node.domain:
-                        node.domain.remove("1")
+                    if "1" in n.domain:
+                        n.domain.remove("1")
                 column_strings = column_strings_finder(input_matrix, number_of_rows)
                 if len(column_strings) > 0:
                     current_column_string = ""
@@ -222,46 +222,46 @@ def equal_zeros_and_ones_checker(nodes, input_matrix, number_of_rows):
                         j += 1
                     dash_index = current_column_string.find("-")
                     current_column_list = list(current_column_string)
-                    if "0" in node.domain:
+                    if "0" in n.domain:
                         current_column_list[dash_index] = "0"
                         current_column_string = str(current_column_list)
                         if current_column_string in column_strings:
-                            node.domain.remove("0")
-                    if "1" in node.domain:
+                            n.domain.remove("0")
+                    if "1" in n.domain:
                         current_column_list[dash_index] = "1"
                         current_column_string = str(current_column_list)
                         if current_column_string in column_strings:
-                            node.domain.remove("1")
+                            n.domain.remove("1")
             if row - 1 >= 0 and row + 1 < number_of_rows and input_matrix[row - 1][column] == input_matrix[row + 1][
                 column] and input_matrix[row - 1][column] != "-":
                 value = input_matrix[row - 1][column]
-                if value in node.domain:
-                    node.domain.remove(value)
+                if value in n.domain:
+                    n.domain.remove(value)
             if row - 2 >= 0 and input_matrix[row - 2][column] == input_matrix[row - 1][column] and \
                     input_matrix[row - 2][column] != "-":
                 value = input_matrix[row - 2][column]
-                if value in node.domain:
-                    node.domain.remove(value)
+                if value in n.domain:
+                    n.domain.remove(value)
             if row + 2 < number_of_rows and input_matrix[row + 2][column] == input_matrix[row + 1][column] and \
                     input_matrix[row + 2][column] != "-":
                 value = input_matrix[row + 2][column]
-                if value in node.domain:
-                    node.domain.remove(value)
+                if value in n.domain:
+                    n.domain.remove(value)
             if column - 1 >= 0 and column + 1 < number_of_rows and input_matrix[row][column - 1] == input_matrix[row][
                 column + 1] and input_matrix[row][column - 1] != "-":
                 value = input_matrix[row][column - 1]
-                if value in node.domain:
-                    node.domain.remove(value)
+                if value in n.domain:
+                    n.domain.remove(value)
             if column - 2 >= 0 and input_matrix[row][column - 2] == input_matrix[row][column - 1] and input_matrix[row][
                 column - 2] != "-":
                 value = input_matrix[row][column - 2]
-                if value in node.domain:
-                    node.domain.remove(value)
+                if value in n.domain:
+                    n.domain.remove(value)
             if column + 2 < number_of_rows and input_matrix[row][column + 2] == input_matrix[row][column + 1] and \
                     input_matrix[row][column + 2] != "-":
                 value = input_matrix[row][column + 2]
-                if value in node.domain:
-                    node.domain.remove(value)
+                if value in n.domain:
+                    n.domain.remove(value)
 
 
 # This function selects a node by MRV method
@@ -429,8 +429,6 @@ def forward_checker(input_matrix, nodes, number_of_rows):
                 value = input_matrix[row][column + 2]
                 if value in node.domain:
                     node.domain.remove(value)
-
-
 
 
 # This function checks if repetition exists among strings in the input list
@@ -692,19 +690,6 @@ def string_repetition_checker(input_list, nodes):
             i += 1
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 # Maintaining arc consistency algorithm is implemented here
 def maintaining_arc_consistency(input_matrix, nodes, number_of_rows, last_node, input_list):
     queue = []
@@ -748,7 +733,7 @@ if algorithm_number == "1":
         if len(current_node.domain) == 0:
             if current_node.parent != "" and current_node.parent.id == "1":
                 error_counter += 1
-                if error_counter == 20:
+                if error_counter == 200:
                     print("Error")
                     error = True
                     break
@@ -860,7 +845,6 @@ if algorithm_number == "2":
     input_matrix_copy = matrix_copier(input_matrix)
     nodes = nodes_generator(input_matrix, number_of_rows)
     equal_zeros_and_ones_checker(nodes, input_matrix, number_of_rows)
-    # forward_checker(input_matrix, nodes, number_of_rows)
     root = minimum_remaining_value_finder(nodes)
     random_assigner(root)
     row, column = row_and_column_finder(root.id)
@@ -883,7 +867,7 @@ if algorithm_number == "2":
         if len(current_node.domain) == 0:
             if current_node.parent != "" and current_node.parent.id == "1":
                 error_counter += 1
-                if error_counter == 20:
+                if error_counter == 200:
                     print("Error")
                     error = True
                     break
@@ -892,7 +876,6 @@ if algorithm_number == "2":
                     input_matrix_copy = matrix_copier(input_matrix)
                     nodes = nodes_generator(input_matrix, number_of_rows)
                     equal_zeros_and_ones_checker(nodes, input_matrix, number_of_rows)
-                    # forward_checker(input_matrix, nodes, number_of_rows)
                     root = minimum_remaining_value_finder(nodes)
                     random_assigner(root)
                     row, column = row_and_column_finder(root.id)
@@ -944,7 +927,6 @@ if algorithm_number == "2":
             previous_selected_node = current_node
             current_node = minimum_remaining_value_finder(nodes)
             if number_of_assigned_nodes != len(nodes):
-                # forward_checker(input_matrix, nodes, number_of_rows)
                 equal_zeros_and_ones_checker(nodes, input_matrix, number_of_rows)
             else:
                 row_strings = row_strings_finder(input_matrix, number_of_rows)
@@ -953,7 +935,6 @@ if algorithm_number == "2":
                     input_matrix = input_matrix_copy
                     input_matrix_copy = matrix_copier(input_matrix)
                     nodes = nodes_generator(input_matrix, number_of_rows)
-                    # forward_checker(input_matrix, nodes, number_of_rows)
                     equal_zeros_and_ones_checker(nodes, input_matrix, number_of_rows)
                     root = minimum_remaining_value_finder(nodes)
                     random_assigner(root)
@@ -977,7 +958,6 @@ if algorithm_number == "2":
                     input_matrix = input_matrix_copy
                     input_matrix_copy = matrix_copier(input_matrix)
                     nodes = nodes_generator(input_matrix, number_of_rows)
-                    # forward_checker(input_matrix, nodes, number_of_rows)
                     equal_zeros_and_ones_checker(nodes, input_matrix, number_of_rows)
                     root = minimum_remaining_value_finder(nodes)
                     random_assigner(root)
