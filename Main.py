@@ -2,7 +2,7 @@
 import random
 # This library is imported for time measurement
 import time
-# This library enables me to create a completely copy of an object
+# This library is used for depp copying objects
 import copy
 
 
@@ -15,7 +15,6 @@ class node:
         # If this variable is true, it means that the node is assigned a value
         self.assigned = False
         self.value = ""
-
 
 
 # This function checks if the input character is a number or not
@@ -135,84 +134,165 @@ def column_strings_finder(input_matrix, number_of_rows):
 
 
 # This function checks the equal number of ones and zeros in a row and a column
-def equal_zeros_and_ones_checker(nodes, input_matrix, number_of_rows, changed_variables_values):
-    i = 0
-    while i < number_of_rows:
-        dash_counter = 0
-        dashed_cells = []
-        j = 0
-        while j < number_of_rows:
-            if input_matrix[i][j] == "-":
-                dash_counter += 1
-                dashed_cells.append(str(i) + "," + str(j))
-            j += 1
-        if dash_counter == 1:
-            k = 0
-            while k < len(nodes):
-                if nodes[k].id == dashed_cells[0]:
-                    dashed_node = nodes[k]
-                    break
-                k += 1
-            one_counter = 0
+def equal_zeros_and_ones_checker(nodes, input_matrix, number_of_rows):
+    for n in nodes:
+        if not n.assigned:
+            row, column = row_and_column_finder(n.id)
+            just_one_remain_in_row = True
             j = 0
             while j < number_of_rows:
-                if input_matrix[i][j] == "1":
-                    one_counter += 1
+                if j != column:
+                    if input_matrix[row][j] == "-":
+                        just_one_remain_in_row = False
+                        break
                 j += 1
-            zero_counter = 0
-            j = 0
-            while j < number_of_rows:
-                if input_matrix[i][j] == "0":
-                    zero_counter += 1
-                j += 1
-            if zero_counter > one_counter:
-                if "0" in dashed_node.domain:
-                    dashed_node.domain.remove("0")
-                    changed_variables_values.append([dashed_node.id, "0"])
-            if one_counter > zero_counter:
-                if "1" in dashed_node.domain:
-                    dashed_node.domain.remove("1")
-                    changed_variables_values.append([dashed_node.id, "1"])
-        i += 1
 
+            if just_one_remain_in_row:
+                one_counter = 0
+                j = 0
+                while j < number_of_rows:
+                    if input_matrix[row][j] == "1":
+                        one_counter += 1
+                    j += 1
+                zero_counter = 0
+                j = 0
+                while j < number_of_rows:
+                    if input_matrix[row][j] == "0":
+                        zero_counter += 1
+                    j += 1
+
+                if zero_counter > one_counter:
+                    if "0" in n.domain:
+                        n.domain.remove("0")
+                if one_counter > zero_counter:
+                    if "1" in n.domain:
+                        n.domain.remove("1")
+                row_strings = row_strings_finder(input_matrix, number_of_rows)
+                if len(row_strings) > 0:
+                    current_row_string = ""
+                    j = 0
+                    while j < number_of_rows:
+                        current_row_string += input_matrix[row][j]
+                        j += 1
+                    dash_index = current_row_string.find("-")
+                    current_row_list = list(current_row_string)
+                    if "0" in n.domain:
+                        current_row_list[dash_index] = "0"
+                        current_row_string = str(current_row_list)
+                        if current_row_string in row_strings:
+                            n.domain.remove("0")
+                    if "1" in n.domain:
+                        current_row_list[dash_index] = "1"
+                        current_row_string = str(current_row_list)
+                        if current_row_string in row_strings:
+                            n.domain.remove("1")
+            just_one_remain_in_column = True
+            j = 0
+            while j < number_of_rows:
+                if j != row:
+                    if input_matrix[j][column] == "-":
+                        just_one_remain_in_column = False
+                        break
+                j += 1
+            if just_one_remain_in_column:
+                one_counter = 0
+                j = 0
+                while j < number_of_rows:
+                    if input_matrix[j][column] == "1":
+                        one_counter += 1
+                    j += 1
+                zero_counter = 0
+                j = 0
+                while j < number_of_rows:
+                    if input_matrix[j][column] == "0":
+                        zero_counter += 1
+                    j += 1
+                if zero_counter > one_counter:
+                    if "0" in n.domain:
+                        n.domain.remove("0")
+                if one_counter > zero_counter:
+                    if "1" in n.domain:
+                        n.domain.remove("1")
+                column_strings = column_strings_finder(input_matrix, number_of_rows)
+                if len(column_strings) > 0:
+                    current_column_string = ""
+                    j = 0
+                    while j < number_of_rows:
+                        current_column_string += input_matrix[j][column]
+                        j += 1
+                    dash_index = current_column_string.find("-")
+                    current_column_list = list(current_column_string)
+                    if "0" in n.domain:
+                        current_column_list[dash_index] = "0"
+                        current_column_string = str(current_column_list)
+                        if current_column_string in column_strings:
+                            n.domain.remove("0")
+                    if "1" in n.domain:
+                        current_column_list[dash_index] = "1"
+                        current_column_string = str(current_column_list)
+                        if current_column_string in column_strings:
+                            n.domain.remove("1")
+            if row - 1 >= 0 and row + 1 < number_of_rows and input_matrix[row - 1][column] == input_matrix[row + 1][
+                column] and input_matrix[row - 1][column] != "-":
+                value = input_matrix[row - 1][column]
+                if value in n.domain:
+                    n.domain.remove(value)
+            if row - 2 >= 0 and input_matrix[row - 2][column] == input_matrix[row - 1][column] and \
+                    input_matrix[row - 2][column] != "-":
+                value = input_matrix[row - 2][column]
+                if value in n.domain:
+                    n.domain.remove(value)
+            if row + 2 < number_of_rows and input_matrix[row + 2][column] == input_matrix[row + 1][column] and \
+                    input_matrix[row + 2][column] != "-":
+                value = input_matrix[row + 2][column]
+                if value in n.domain:
+                    n.domain.remove(value)
+            if column - 1 >= 0 and column + 1 < number_of_rows and input_matrix[row][column - 1] == input_matrix[row][
+                column + 1] and input_matrix[row][column - 1] != "-":
+                value = input_matrix[row][column - 1]
+                if value in n.domain:
+                    n.domain.remove(value)
+            if column - 2 >= 0 and input_matrix[row][column - 2] == input_matrix[row][column - 1] and input_matrix[row][
+                column - 2] != "-":
+                value = input_matrix[row][column - 2]
+                if value in n.domain:
+                    n.domain.remove(value)
+            if column + 2 < number_of_rows and input_matrix[row][column + 2] == input_matrix[row][column + 1] and \
+                    input_matrix[row][column + 2] != "-":
+                value = input_matrix[row][column + 2]
+                if value in n.domain:
+                    n.domain.remove(value)
+
+
+# This function selects a node by MRV method
+def minimum_remaining_value_finder(nodes):
     i = 0
-    while i < number_of_rows:
-        dash_counter = 0
-        dashed_cells = []
-        j = 0
-        while j < number_of_rows:
-            if input_matrix[j][i] == "-":
-                dash_counter += 1
-                dashed_cells.append(str(j) + "," + str(i))
-            j += 1
-        if dash_counter == 1:
-            k = 0
-            while k < len(nodes):
-                if nodes[k].id == dashed_cells[0]:
-                    dashed_node = nodes[k]
-                    break
-                k += 1
-            one_counter = 0
-            j = 0
-            while j < number_of_rows:
-                if input_matrix[j][i] == "1":
-                    one_counter += 1
-                j += 1
-            zero_counter = 0
-            j = 0
-            while j < number_of_rows:
-                if input_matrix[j][i] == "0":
-                    zero_counter += 1
-                j += 1
-            if zero_counter > one_counter:
-                if "0" in dashed_node.domain:
-                    dashed_node.domain.remove("0")
-                    changed_variables_values.append([dashed_node.id, "0"])
-            if one_counter > zero_counter:
-                if "1" in dashed_node.domain:
-                    dashed_node.domain.remove("1")
-                    changed_variables_values.append([dashed_node.id, "1"])
+    minimum_remaining_node = ""
+    while i < len(nodes):
+        if not nodes[i].assigned:
+            minimum_remaining_node = nodes[i]
+            break
         i += 1
+    if minimum_remaining_node != "":
+        for node in nodes:
+            if not node.assigned:
+                if len(node.domain) < len(minimum_remaining_node.domain):
+                    minimum_remaining_node = node
+    return minimum_remaining_node
+
+
+# This function assigns a value to the input node
+def random_assigner(node):
+    if len(node.domain) == 1:
+        node.value = node.domain[0]
+    else:
+        random_index = random.randint(0, 1)
+        node.value = node.domain[random_index]
+
+
+# This function generates a copy of the input matrix
+def matrix_copier(input_matrix):
+    return copy.deepcopy(input_matrix)
 
 
 # Forward checking part of the algorithm is implemented here
@@ -351,80 +431,6 @@ def forward_checker(input_matrix, nodes, number_of_rows):
                     node.domain.remove(value)
 
 
-# This function selects a node by MRV method
-def minimum_remaining_value_finder(nodes):
-    i = 0
-    minimum_remaining_node = ""
-    while i < len(nodes):
-        if not nodes[i].assigned:
-            minimum_remaining_node = nodes[i]
-            break
-        i += 1
-    if minimum_remaining_node != "":
-        for node in nodes:
-            if not node.assigned:
-                if len(node.domain) < len(minimum_remaining_node.domain):
-                    minimum_remaining_node = node
-    return minimum_remaining_node
-
-
-# This function selects a node by MRV method
-def minimum_remaining_value_finder_mac_version(nodes):
-    i = 0
-    minimum_remaining_node = ""
-    while i < len(nodes):
-        if not nodes[i].assigned:
-            minimum_remaining_node = nodes[i]
-            break
-        i += 1
-    if minimum_remaining_node != "":
-        for node in nodes:
-            if not node.assigned:
-                if len(node.domain) < len(minimum_remaining_node.domain):
-                    minimum_remaining_node = node
-        minimum_remaining_nodes = []
-        for node in nodes:
-            if len(node.domain) == len(minimum_remaining_node.domain):
-                minimum_remaining_nodes.append(node)
-        random_number = random.randint(0, len(minimum_remaining_nodes) - 1)
-        minimum_remaining_node = minimum_remaining_nodes[random_number]
-    return minimum_remaining_node
-
-
-
-
-# This function assigns a value to the input node
-def random_assigner(node):
-    if len(node.domain) == 1:
-        node.value = node.domain[0]
-    else:
-        random_index = random.randint(0, 1)
-        node.value = node.domain[random_index]
-
-
-# This function generates a copy of the input matrix
-def matrix_copier(input_matrix):
-    return copy.deepcopy(input_matrix)
-
-
-# This function copies the input list of all nodes
-def nodes_copier(input_nodes):
-    return copy.deepcopy(input_nodes)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 # This function checks if repetition exists among strings in the input list
 def does_repetition_exist(input_list):
     i = 0
@@ -494,30 +500,8 @@ def row_numbers_checker(input_matrix, number_of_rows):
     return True
 
 
-# This function checks the number of ones and zeros in a row for MAC method
-def row_numbers_checker_mac_version(input_matrix, number_of_rows):
-    i = 0
-    while i < number_of_rows:
-        j = 0
-        while j <= number_of_rows - 3:
-            if input_matrix[i][j] != "-" and input_matrix[i][j] == input_matrix[i][j + 1] and input_matrix[i][j + 1] == input_matrix[i][j + 2]:
-                return False
-            j += 1
-        i += 1
-
-    i = 0
-    while i < number_of_rows:
-        j = 0
-        while j <= number_of_rows - 3:
-            if input_matrix[j][i] != "-" and input_matrix[j][i] == input_matrix[j + 1][i] and input_matrix[j + 1][i] == input_matrix[j + 2][i]:
-                return False
-            j += 1
-        i += 1
-    return True
-
-
 # The AC_3 algorithm is implemented here
-def ac_3(input_nodes, queue, input_matrix, nodes, number_of_rows, changed_variables_values):
+def ac_3(input_nodes, queue, input_matrix, nodes, number_of_rows, input_list):
     first_node = input_nodes[0]
     second_node = input_nodes[1]
     first_node_row, first_node_column = row_and_column_finder(first_node.id)
@@ -526,10 +510,11 @@ def ac_3(input_nodes, queue, input_matrix, nodes, number_of_rows, changed_variab
     # Checking for row equal values in a row
     if first_node_row == second_node_row:
         if first_node_column + 1 == second_node_column and first_node_column + 2 < number_of_rows and input_matrix[first_node_row][first_node_column + 2] != "-" and second_node.value == input_matrix[first_node_row][first_node_column + 2]:
+            print()
             value = input_matrix[first_node_row][first_node_column + 2]
             if value in first_node.domain:
                 first_node.domain.remove(value)
-                changed_variables_values.append([first_node.id, value])
+                input_list.append([first_node.id, value])
 
                 for node in nodes:
                     neighbor_row, neighbor_column = row_and_column_finder(node.id)
@@ -541,7 +526,7 @@ def ac_3(input_nodes, queue, input_matrix, nodes, number_of_rows, changed_variab
             value = input_matrix[first_node_row][first_node_column + 1]
             if value in first_node.domain:
                 first_node.domain.remove(value)
-                changed_variables_values.append([first_node.id, value])
+                input_list.append([first_node.id, value])
 
 
 
@@ -555,7 +540,7 @@ def ac_3(input_nodes, queue, input_matrix, nodes, number_of_rows, changed_variab
             value = input_matrix[first_node_row][first_node_column + 1]
             if value in first_node.domain:
                 first_node.domain.remove(value)
-                changed_variables_values.append([first_node.id, value])
+                input_list.append([first_node.id, value])
 
 
 
@@ -569,7 +554,7 @@ def ac_3(input_nodes, queue, input_matrix, nodes, number_of_rows, changed_variab
             value = input_matrix[first_node_row][first_node_column - 1]
             if value in first_node.domain:
                 first_node.domain.remove(value)
-                changed_variables_values.append([first_node.id, value])
+                input_list.append([first_node.id, value])
 
 
                 for node in nodes:
@@ -582,7 +567,7 @@ def ac_3(input_nodes, queue, input_matrix, nodes, number_of_rows, changed_variab
             value = input_matrix[first_node_row][first_node_column - 1]
             if value in first_node.domain:
                 first_node.domain.remove(value)
-                changed_variables_values.append([first_node.id, value])
+                input_list.append([first_node.id, value])
 
 
                 for node in nodes:
@@ -595,7 +580,7 @@ def ac_3(input_nodes, queue, input_matrix, nodes, number_of_rows, changed_variab
             value = input_matrix[first_node_row][first_node_column - 2]
             if value in first_node.domain:
                 first_node.domain.remove(value)
-                changed_variables_values.append([first_node.id, value])
+                input_list.append([first_node.id, value])
 
 
 
@@ -611,7 +596,7 @@ def ac_3(input_nodes, queue, input_matrix, nodes, number_of_rows, changed_variab
             value = input_matrix[first_node_row + 2][first_node_column]
             if value in first_node.domain:
                 first_node.domain.remove(value)
-                changed_variables_values.append([first_node.id, value])
+                input_list.append([first_node.id, value])
 
 
 
@@ -626,7 +611,7 @@ def ac_3(input_nodes, queue, input_matrix, nodes, number_of_rows, changed_variab
             value = input_matrix[first_node_row + 1][first_node_column]
             if value in first_node.domain:
                 first_node.domain.remove(value)
-                changed_variables_values.append([first_node.id, value])
+                input_list.append([first_node.id, value])
 
 
 
@@ -641,7 +626,7 @@ def ac_3(input_nodes, queue, input_matrix, nodes, number_of_rows, changed_variab
             value = input_matrix[first_node_row + 1][first_node_column]
             if value in first_node.domain:
                 first_node.domain.remove(value)
-                changed_variables_values.append([first_node.id, value])
+                input_list.append([first_node.id, value])
 
 
 
@@ -656,7 +641,7 @@ def ac_3(input_nodes, queue, input_matrix, nodes, number_of_rows, changed_variab
             value = input_matrix[first_node_row - 1][first_node_column]
             if value in first_node.domain:
                 first_node.domain.remove(value)
-                changed_variables_values.append([first_node.id, value])
+                input_list.append([first_node.id, value])
 
 
 
@@ -670,7 +655,7 @@ def ac_3(input_nodes, queue, input_matrix, nodes, number_of_rows, changed_variab
             value = input_matrix[first_node_row - 1][first_node_column]
             if value in first_node.domain:
                 first_node.domain.remove(value)
-                changed_variables_values.append([first_node.id, value])
+                input_list.append([first_node.id, value])
 
 
 
@@ -684,7 +669,7 @@ def ac_3(input_nodes, queue, input_matrix, nodes, number_of_rows, changed_variab
             value = input_matrix[first_node_row - 2][first_node_column]
             if value in first_node.domain:
                 first_node.domain.remove(value)
-                changed_variables_values.append([first_node.id, value])
+                input_list.append([first_node.id, value])
 
 
                 for node in nodes:
@@ -694,8 +679,19 @@ def ac_3(input_nodes, queue, input_matrix, nodes, number_of_rows, changed_variab
                             queue.append([node, first_node])
 
 
+# This function checks the repetition of strings
+def string_repetition_checker(input_list, nodes):
+    for string in input_list:
+        i = 0
+        while i < len(nodes):
+            if nodes[i].id == string[0]:
+                nodes[i].domain.append(string[1])
+                break
+            i += 1
+
+
 # Maintaining arc consistency algorithm is implemented here
-def maintaining_arc_consistency(input_matrix, nodes, number_of_rows, last_node, changed_variables_values):
+def maintaining_arc_consistency(input_matrix, nodes, number_of_rows, last_node, input_list):
     queue = []
     last_node_row, last_node_column = row_and_column_finder(last_node.id)
     for node in nodes:
@@ -705,73 +701,8 @@ def maintaining_arc_consistency(input_matrix, nodes, number_of_rows, last_node, 
                 queue.append([node, last_node])
 
     while len(queue) != 0:
-        ac_3(queue[0], queue, input_matrix, nodes, number_of_rows, changed_variables_values)
+        ac_3(queue[0], queue, input_matrix, nodes, number_of_rows, input_list)
         queue.pop(0)
-
-
-# This function checks if a variable with zero domain exist or not
-def does_zero_domain_exist(nodes):
-    for node in nodes:
-        if (not node.assigned) and len(node.domain) == 0:
-            return True
-    return False
-
-
-# This function checks if the number of ones is equal to number_of_rows/2 or not after a row or a column is completed
-def number_of_ones_checker_mac_version(input_matrix, number_of_rows):
-    i = 0
-    while i < number_of_rows:
-        completed = True
-        number_of_ones = 0
-        j = 0
-        while j < number_of_rows:
-            if input_matrix[i][j] == "-":
-                completed = False
-                break
-            j += 1
-        if completed:
-            j = 0
-            while j < number_of_rows:
-                if input_matrix[i][j] == "1":
-                    number_of_ones += 1
-                j += 1
-            if number_of_ones != number_of_rows / 2:
-                return False
-        i += 1
-
-    i = 0
-    while i < number_of_rows:
-        completed = True
-        number_of_ones = 0
-        j = 0
-        while j < number_of_rows:
-            if input_matrix[j][i] == "-":
-                completed = False
-                break
-            j += 1
-        if completed:
-            j = 0
-            while j < number_of_rows:
-                if input_matrix[j][i] == "1":
-                    number_of_ones += 1
-                j += 1
-            if number_of_ones != number_of_rows / 2:
-                return False
-        i += 1
-
-    return True
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -802,7 +733,7 @@ if algorithm_number == "1":
         if len(current_node.domain) == 0:
             if current_node.parent != "" and current_node.parent.id == "1":
                 error_counter += 1
-                if error_counter == 20:
+                if error_counter == 200:
                     print("Error")
                     error = True
                     break
@@ -909,100 +840,148 @@ if algorithm_number == "1":
 
 
 if algorithm_number == "2":
-    mac_start_time = time.time()    # Starting timer
+    mac_start_time = time.time()  # Starting timer
     matrix_printer(input_matrix)
     input_matrix_copy = matrix_copier(input_matrix)
     nodes = nodes_generator(input_matrix, number_of_rows)
-
-
-    assigned_variables_ids = []
-    changed_nodes_ids_removed_values = []  # The domain of these nodes changed in the last step
-    repeat = False
-    finished = False
-
-    while True:
-
-        current_node = minimum_remaining_value_finder_mac_version(nodes)
-
-        if current_node == "":
-            finished = True
-            break
-        else:
-            while True:
-
-                if not repeat:
-                    assigned_variables_ids.append(current_node.id)
-
-                random_assigner(current_node)
-                current_node.domain.remove(current_node.value)
-                current_node.assigned = True
+    equal_zeros_and_ones_checker(nodes, input_matrix, number_of_rows)
+    root = minimum_remaining_value_finder(nodes)
+    random_assigner(root)
+    row, column = row_and_column_finder(root.id)
+    input_matrix[row][column] = root.value
+    matrix_printer(input_matrix)
+    root.assigned = True
+    root.parent = node("1")  # This is the root's parent id for finding it
+    root.domain.remove(root.value)
+    input_list = []
+    maintaining_arc_consistency(input_matrix, nodes, number_of_rows, root, input_list)
+    number_of_assigned_nodes = 1
+    previous_selected_node = root
+    string_repetition_checker(input_list, nodes)
+    error_counter = 0
+    current_node = minimum_remaining_value_finder(nodes)
+    current_node.parent = root
+    error = False
+    # Backtracking algorithm is implemented here
+    while number_of_assigned_nodes != len(nodes):
+        if len(current_node.domain) == 0:
+            if current_node.parent != "" and current_node.parent.id == "1":
+                error_counter += 1
+                if error_counter == 200:
+                    print("Error")
+                    error = True
+                    break
+                else:
+                    input_matrix = input_matrix_copy
+                    input_matrix_copy = matrix_copier(input_matrix)
+                    nodes = nodes_generator(input_matrix, number_of_rows)
+                    equal_zeros_and_ones_checker(nodes, input_matrix, number_of_rows)
+                    root = minimum_remaining_value_finder(nodes)
+                    random_assigner(root)
+                    row, column = row_and_column_finder(root.id)
+                    input_matrix[row][column] = root.value
+                    matrix_printer(input_matrix)
+                    root.assigned = True
+                    root.parent = node("1")
+                    root.domain.remove(root.value)
+                    input_list = []
+                    maintaining_arc_consistency(input_matrix, nodes, number_of_rows, root, input_list)
+                    number_of_assigned_nodes = 1
+                    previous_selected_node = root
+                    string_repetition_checker(input_list, nodes)
+                    current_node = minimum_remaining_value_finder(nodes)
+                    current_node.parent = root
+            else:
+                current_node.domain.append("0")
+                current_node.domain.append("1")
+                current_node.value = ""
+                current_node.assigned = False
                 row, column = row_and_column_finder(current_node.id)
-                input_matrix[row][column] = current_node.value
+                input_matrix[row][column] = "-"
                 matrix_printer(input_matrix)
+                if current_node.parent != "":
+                    temp = current_node
+                    current_node = current_node.parent
+                    previous_selected_node = current_node.parent
+                    temp.parent = ""
+                    number_of_assigned_nodes = number_of_assigned_nodes - 1
+                else:
+                    temp = current_node
+                    current_node = previous_selected_node
+                    previous_selected_node = current_node.parent
+                    temp.parent = ""
+                    number_of_assigned_nodes = number_of_assigned_nodes - 1
 
-                # maintaining_arc_consistency(input_matrix, nodes, number_of_rows, current_node, changed_nodes_ids_removed_values)
-                # equal_zeros_and_ones_checker(nodes, input_matrix, number_of_rows, changed_nodes_ids_removed_values)
-
+        else:
+            random_assigner(current_node)
+            row, column = row_and_column_finder(current_node.id)
+            input_matrix[row][column] = current_node.value
+            matrix_printer(input_matrix)
+            current_node.assigned = True
+            number_of_assigned_nodes += 1
+            current_node.domain.remove(current_node.value)
+            input_list = []
+            maintaining_arc_consistency(input_matrix, nodes, number_of_rows, root, input_list)
+            current_node.parent = previous_selected_node
+            string_repetition_checker(input_list, nodes)
+            previous_selected_node = current_node
+            current_node = minimum_remaining_value_finder(nodes)
+            if number_of_assigned_nodes != len(nodes):
+                equal_zeros_and_ones_checker(nodes, input_matrix, number_of_rows)
+            else:
                 row_strings = row_strings_finder(input_matrix, number_of_rows)
                 column_strings = column_strings_finder(input_matrix, number_of_rows)
-                # print("the number of ones checker: " + str(number_of_ones_checker_mac_version(input_matrix, number_of_rows)))
-                # print("2: " + str(row_numbers_checker_mac_version(input_matrix, number_of_rows)))
-                # print("3: " + str(does_repetition_exist(row_strings)))
-                # print("4: " + str(does_repetition_exist(column_strings)))
-                # print("5: " + str(does_zero_domain_exist(nodes)))
-                if not number_of_ones_checker_mac_version(input_matrix, number_of_rows) or not row_numbers_checker_mac_version(input_matrix, number_of_rows) or does_repetition_exist(row_strings) or does_repetition_exist(column_strings) or does_zero_domain_exist(nodes):
-                    if len(current_node.domain) == 0:
-                        while len(current_node.domain) == 0:
-                            current_node.domain = ["0", "1"]
-                            current_node.assigned = False
-                            current_node.value = ""
-                            row, column = row_and_column_finder(current_node.id)
-                            input_matrix[row][column] = "-"
-                            t = 0
-                            while t < len(nodes):
-                                if len(assigned_variables_ids) == 1:
-                                    input_matrix = input_matrix_copy
-                                    input_matrix_copy = matrix_copier(input_matrix)
-                                    nodes = nodes_generator(input_matrix, number_of_rows)
-                                    assigned_variables_ids = []
-                                    current_node = minimum_remaining_value_finder_mac_version(nodes)
-                                    break
-                                if nodes[t].id == assigned_variables_ids[len(assigned_variables_ids) - 2]:
-                                    current_node = nodes[t]
-                                    break
-                                t += 1
+                if does_repetition_exist(row_strings) or does_repetition_exist(column_strings):
+                    input_matrix = input_matrix_copy
+                    input_matrix_copy = matrix_copier(input_matrix)
+                    nodes = nodes_generator(input_matrix, number_of_rows)
+                    equal_zeros_and_ones_checker(nodes, input_matrix, number_of_rows)
+                    root = minimum_remaining_value_finder(nodes)
+                    random_assigner(root)
+                    row, column = row_and_column_finder(root.id)
+                    input_matrix[row][column] = root.value
+                    matrix_printer(input_matrix)
+                    root.assigned = True
+                    root.parent = node("1")
+                    root.domain.remove(root.value)
+                    input_list = []
+                    maintaining_arc_consistency(input_matrix, nodes, number_of_rows, root, input_list)
+                    number_of_assigned_nodes = 1
+                    previous_selected_node = root
+                    string_repetition_checker(input_list, nodes)
+                    current_node = minimum_remaining_value_finder(nodes)
+                    current_node.parent = root
+                    error = False
+                    continue
 
-                            if len(assigned_variables_ids) >= 1:
-                                assigned_variables_ids.pop(len(assigned_variables_ids) - 1)
-                        repeat = False
+                if not number_of_ones_checker(input_matrix, number_of_rows / 2, number_of_rows):
+                    input_matrix = input_matrix_copy
+                    input_matrix_copy = matrix_copier(input_matrix)
+                    nodes = nodes_generator(input_matrix, number_of_rows)
+                    equal_zeros_and_ones_checker(nodes, input_matrix, number_of_rows)
+                    root = minimum_remaining_value_finder(nodes)
+                    random_assigner(root)
+                    row, column = row_and_column_finder(root.id)
+                    input_matrix[row][column] = root.value
+                    matrix_printer(input_matrix)
+                    root.assigned = True
+                    root.parent = node("1")
+                    root.domain.remove(root.value)
+                    input_list = []
+                    maintaining_arc_consistency(input_matrix, nodes, number_of_rows, root, input_list)
+                    number_of_assigned_nodes = 1
+                    previous_selected_node = root
+                    string_repetition_checker(input_list, nodes)
+                    current_node = minimum_remaining_value_finder(nodes)
+                    current_node.parent = root
+                    error = False
+                    continue
 
-                    else:
-                        repeat = True
-
-                else:
-                    break
-
-
-
-
-
-
-
-
-
-
-
-
-
-    # ####################################### This error variable
-    if finished:
+    if not error:
         print("FINAL RESULT: ")
         matrix_printer(input_matrix)
         mac_stop_time = time.time()
         print("Time: " + str(round(mac_stop_time - mac_start_time, 3)) + " s")
-
-    else:
-        print("Error")
 
 
 
